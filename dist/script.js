@@ -25,7 +25,7 @@ class CoinID {
     return __awaiter(this, void 0, void 0, function* () {
         let cardContainer = document.querySelector("#cardContainer");
         let data = (yield saveLocalStorage("list"));
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 9; i++) {
             let card = createElement("div", ["card"], cardContainer);
             let cardBody = createElement("div", ["card-body"], card);
             let cardTitle = createElement("h5", ["card-title"], cardBody);
@@ -35,15 +35,9 @@ class CoinID {
             cardText.innerText = data[i].name;
             button.innerText = "more info";
             button.addEventListener("click", function () {
-                button.setAttribute("data-toggle", "collapse");
-                button.setAttribute("data-target", "#collapseExample");
-                button.setAttribute("aria-expanded", "false");
-                button.setAttribute("aria-controls", "collapseExample");
-                let info = createElement("div", ["collapse"], button);
-                info.id = "collapseExample";
-                info.innerText = "111";
-                cardText.appendChild(info);
-                saveLocalStorage(data[i].id);
+                return __awaiter(this, void 0, void 0, function* () {
+                    let coinData = yield saveLocalStorage(data[i].id);
+                });
             });
         }
     });

@@ -23,41 +23,22 @@ class CoinID {
 
   let data = (await saveLocalStorage("list")) as Coin[];
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 9; i++) {
     let card = createElement("div", ["card"], cardContainer) as HTMLElement;
     let cardBody = createElement("div", ["card-body"], card) as HTMLElement;
-    let cardTitle = createElement( "h5",["card-title"], cardBody) as HTMLElement;
+    let cardTitle = createElement("h5",["card-title"], cardBody) as HTMLElement;
     let cardText = createElement("p", ["card-text"], cardBody) as HTMLElement;
-    let button = createElement( "button", ["btn", "btn-primary"],cardBody) as HTMLButtonElement;
+    let button = createElement("button",["btn", "btn-primary"],cardBody) as HTMLButtonElement;
 
-    
-    
     cardTitle.innerText = data[i].id;
     cardText.innerText = data[i].name;
     button.innerText = "more info";
 
-    button.addEventListener("click", function(){
-      button.setAttribute("data-toggle", "collapse");
-    button.setAttribute("data-target", "#collapseExample");
-    button.setAttribute("aria-expanded", "false");
-    button.setAttribute("aria-controls", "collapseExample");
-
-      let info = createElement("div",["collapse"],button )
-      info.id = "collapseExample"
-      info.innerText = "111"
-      cardText.appendChild(info)
-      
-      
-      
-      
-saveLocalStorage(data[i].id)
-
-    })
+    button.addEventListener("click",async  function () {
+let coinData =  await saveLocalStorage(data[i].id) 
+});
   }
-
 })();
-
-
 
 async function saveLocalStorage(key: string): Promise<(Coin | CoinID)[]> {
   let data: (Coin | CoinID)[];
@@ -67,7 +48,7 @@ async function saveLocalStorage(key: string): Promise<(Coin | CoinID)[]> {
   } else {
     data = JSON.parse(localStorage[key]);
   }
-  console.log(data)
+  console.log(data);
   return data;
 }
 
@@ -89,8 +70,3 @@ function createElement(
   appendTo.appendChild(element);
   return element;
 }
-
-
-
-
-
