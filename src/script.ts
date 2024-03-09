@@ -28,14 +28,16 @@ class CoinID {
     let cardBody = createElement("div", ["card-body"], card) as HTMLElement;
     let cardTitle = createElement("h5",["card-title"], cardBody) as HTMLElement;
     let cardText = createElement("p", ["card-text"], cardBody) as HTMLElement;
-    let button = createElement("button",["btn", "btn-primary"],cardBody) as HTMLButtonElement;
+    let button = createElement("button",["btn", "btn-primary"],card) as HTMLButtonElement;
 
     cardTitle.innerText = data[i].id;
     cardText.innerText = data[i].name;
     button.innerText = "more info";
 
     button.addEventListener("click",async  function () {
+      let info = createElement("div",["info"],cardBody)
 let coinData =  await saveLocalStorage(data[i].id) 
+info.innerHTML = coinData
 });
   }
 })();

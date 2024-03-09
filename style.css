@@ -26,5 +26,11 @@
 .card{
 width: 270px;
 height: 140px;
+align-items: flex-start;
+}
+
+.btn
+,.btn-primary{
+    margin: 0px 0px 10px 15px;
 }
 
