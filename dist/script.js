@@ -25,7 +25,7 @@ class CoinID {
     return __awaiter(this, void 0, void 0, function* () {
         let cardContainer = document.querySelector("#cardContainer");
         let data = (yield saveLocalStorage("list"));
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 20; i++) {
             let card = createElement("div", ["card"], cardContainer);
             let cardBody = createElement("div", ["card-body"], card);
             let cardTitle = createElement("h5", ["card-title"], cardBody);
@@ -34,14 +34,18 @@ class CoinID {
             cardTitle.innerText = data[i].id;
             cardText.innerText = data[i].name;
             button.innerText = "more info";
-        }
-        let buttons = document.querySelectorAll(".btn");
-        function handelBtn() {
-            buttons.forEach((button) => {
-                button.addEventListener("click", function () { });
+            button.addEventListener("click", function () {
+                button.setAttribute("data-toggle", "collapse");
+                button.setAttribute("data-target", "#collapseExample");
+                button.setAttribute("aria-expanded", "false");
+                button.setAttribute("aria-controls", "collapseExample");
+                let info = createElement("div", ["collapse"], button);
+                info.id = "collapseExample";
+                info.innerText = "111";
+                cardText.appendChild(info);
+                saveLocalStorage(data[i].id);
             });
         }
-        handelBtn();
     });
 })();
 function saveLocalStorage(key) {
@@ -54,6 +58,7 @@ function saveLocalStorage(key) {
         else {
             data = JSON.parse(localStorage[key]);
         }
+        console.log(data);
         return data;
     });
 }
