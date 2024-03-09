@@ -1,0 +1,30 @@
+#headContainer { 
+  background-color: rgba(214, 214, 214, 0.868);
+  border-bottom: 2px solid black;
+  display: flex;
+  flex-direction: row;
+  padding-top: 20px;
+
+}
+
+#coinImage {
+  width: 100px;
+  height: 100px;
+}
+
+
+
+#cardContainer{
+    margin: 35px auto  ;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    width: 910px;
+    height: 500px;
+}
+
+.card{
+width: 270px;
+height: 140px;
+}
+

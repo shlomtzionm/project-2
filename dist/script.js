@@ -23,17 +23,27 @@ class CoinID {
 }
 (function () {
     return __awaiter(this, void 0, void 0, function* () {
-        let listData = yield saveLocalStorage("list");
-        yield eachCoinData(listData);
+        let cardContainer = document.querySelector("#cardContainer");
+        let data = (yield saveLocalStorage("list"));
+        for (let i = 0; i < 9; i++) {
+            let card = createElement("div", ["card"], cardContainer);
+            let cardBody = createElement("div", ["card-body"], card);
+            let cardTitle = createElement("h5", ["card-title"], cardBody);
+            let cardText = createElement("p", ["card-text"], cardBody);
+            let button = createElement("button", ["btn", "btn-primary"], cardBody);
+            cardTitle.innerText = data[i].id;
+            cardText.innerText = data[i].name;
+            button.innerText = "more info";
+        }
+        let buttons = document.querySelectorAll(".btn");
+        function handelBtn() {
+            buttons.forEach((button) => {
+                button.addEventListener("click", function () { });
+            });
+        }
+        handelBtn();
     });
 })();
-function eachCoinData(data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        for (let i = 0; i < 5; i++) {
-            saveLocalStorage((data[i].id));
-        }
-    });
-}
 function saveLocalStorage(key) {
     return __awaiter(this, void 0, void 0, function* () {
         let data;
@@ -44,7 +54,6 @@ function saveLocalStorage(key) {
         else {
             data = JSON.parse(localStorage[key]);
         }
-        console.log(data);
         return data;
     });
 }
@@ -54,4 +63,12 @@ function fetchData(parameter) {
         let data = yield res.json();
         return data;
     });
+}
+function createElement(div, classNames, appendTo) {
+    let element = document.createElement(div);
+    classNames.forEach((className) => {
+        element.classList.add(className);
+    });
+    appendTo.appendChild(element);
+    return element;
 }
