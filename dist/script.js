@@ -16,8 +16,8 @@ class Coin {
     }
 }
 class CoinID {
-    constructor(img, market_data) {
-        this.img = img;
+    constructor(image, market_data) {
+        this.image = image;
         this.market_data = market_data;
     }
 }
@@ -31,13 +31,21 @@ class CoinID {
             let cardTitle = createElement("h5", ["card-title"], cardBody);
             let cardText = createElement("p", ["card-text"], cardBody);
             let button = createElement("button", ["btn", "btn-primary"], card);
-            cardTitle.innerText = data[i].id;
-            cardText.innerText = data[i].name;
-            button.innerText = "more info";
+            button.setAttribute("isTrue", "false");
+            handelButtonInfo(cardTitle, cardText, button, data, i);
             button.addEventListener("click", function () {
                 return __awaiter(this, void 0, void 0, function* () {
-                    let info = createElement("div", ["info"], cardBody);
-                    let coinData = yield saveLocalStorage(data[i].id);
+                    if (button.getAttribute("isTrue") === "false") {
+                        cardText.innerHTML = "";
+                        moreInfo(data, i, cardText, card);
+                        button.setAttribute("isTrue", "true");
+                    }
+                    else {
+                        cardText.innerHTML = "";
+                        handelButtonInfo(cardTitle, cardText, button, data, i);
+                        button.setAttribute("isTrue", "false");
+                    }
+                    cardText.innerHTML = "";
                 });
             });
         }
@@ -71,4 +79,23 @@ function createElement(div, classNames, appendTo) {
     });
     appendTo.appendChild(element);
     return element;
+}
+function moreInfo(data, i, cardBody, card) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let info = createElement("div", ["info"], cardBody);
+        let coinData = yield saveLocalStorage(data[i].id);
+        let img = createElement("img", ["img"], info);
+        img.src = coinData.image.small;
+        let inf = createElement("p", ["eur"], cardBody);
+        inf.innerText = coinData.market_data.current_price.eur.toString();
+        let ils = createElement("p", ["eur"], cardBody);
+        ils.innerText = coinData.market_data.current_price.eur.toString();
+        let usd = createElement("p", ["usd"], cardBody);
+        usd.innerText = coinData.market_data.current_price.usd.toString();
+    });
+}
+function handelButtonInfo(cardTitle, cardText, button, data, i) {
+    cardTitle.innerText = data[i].id;
+    cardText.innerText = data[i].name;
+    button.innerText = "more info";
 }

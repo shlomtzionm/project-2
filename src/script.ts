@@ -10,13 +10,14 @@ class Coin {
 }
 
 class CoinID {
-  img: string;
-  market_data: {};
-  constructor(img: string, market_data: {}) {
-    this.img = img;
+  image: { small: string };
+  market_data: { current_price: { usd: number, eur: number, ils: number } };
+  constructor(image: { small: string }, market_data: { current_price: { usd: number, eur: number, ils: number } }) {
+    this.image = image;
     this.market_data = market_data;
   }
 }
+
 
 (async function () {
   let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
@@ -26,24 +27,32 @@ class CoinID {
   for (let i = 0; i < 9; i++) {
     let card = createElement("div", ["card"], cardContainer) as HTMLElement;
     let cardBody = createElement("div", ["card-body"], card) as HTMLElement;
-    let cardTitle = createElement("h5",["card-title"], cardBody) as HTMLElement;
+    let cardTitle = createElement("h5", ["card-title"], cardBody) as HTMLElement;
     let cardText = createElement("p", ["card-text"], cardBody) as HTMLElement;
-    let button = createElement("button",["btn", "btn-primary"],card) as HTMLButtonElement;
+    let button = createElement("button", ["btn", "btn-primary"], card) as HTMLButtonElement;
+    button.setAttribute("isTrue", "false");
 
-    cardTitle.innerText = data[i].id;
-    cardText.innerText = data[i].name;
-    button.innerText = "more info";
+    handelButtonInfo(cardTitle, cardText, button, data, i)
 
-    button.addEventListener("click",async  function () {
-      let info = createElement("div",["info"],cardBody)
-let coinData =  await saveLocalStorage(data[i].id) 
-info.innerHTML = coinData
-});
+    button.addEventListener("click", async function () {
+      
+      if (button.getAttribute("isTrue") === "false") {
+        cardText.innerHTML = "";
+        moreInfo(data, i, cardText, card);
+        button.setAttribute("isTrue", "true");
+      } else{
+        cardText.innerHTML =""
+        handelButtonInfo(cardTitle, cardText, button, data, i)
+        button.setAttribute("isTrue" , "false") 
+      }
+      cardText.innerHTML = "";
+    });
   }
 })();
 
-async function saveLocalStorage(key: string): Promise<(Coin | CoinID)[]> {
-  let data: (Coin | CoinID)[];
+
+async function saveLocalStorage(key: string):Promise<(Coin []| CoinID)> {
+  let data:(Coin []| CoinID);
   if (!localStorage[key]) {
     data = await fetchData(key);
     localStorage.setItem(key, JSON.stringify(data));
@@ -54,7 +63,7 @@ async function saveLocalStorage(key: string): Promise<(Coin | CoinID)[]> {
   return data;
 }
 
-async function fetchData(parameter: string): Promise<(Coin | CoinID)[]> {
+async function fetchData(parameter: string): Promise<(Coin []| CoinID)> {
   let res = await fetch(`https://api.coingecko.com/api/v3/coins/${parameter}`);
   let data = await res.json();
   return data;
@@ -71,4 +80,28 @@ function createElement(
   });
   appendTo.appendChild(element);
   return element;
+}
+
+
+async function moreInfo(data: Coin[], i: number,cardBody:HTMLElement, card:HTMLElement) {
+  
+  let info = createElement("div",["info"],cardBody)
+  let coinData =  await saveLocalStorage(data[i].id) as CoinID
+  
+  let img = createElement("img",["img"],info) as HTMLImageElement
+  img.src = coinData.image.small
+  
+  let inf = createElement("p",["eur"], cardBody)
+  inf.innerText = coinData.market_data.current_price.eur.toString()
+  let ils = createElement("p",["eur"], cardBody)
+  ils.innerText = coinData.market_data.current_price.eur.toString()
+  let usd = createElement("p",["usd"], cardBody)
+  usd.innerText = coinData.market_data.current_price.usd.toString()
+}
+
+function handelButtonInfo(cardTitle:HTMLElement, cardText:HTMLElement, button: HTMLButtonElement, data: Coin[], i:number){
+  cardTitle.innerText = data[i].id;
+  cardText.innerText = data[i].name;
+  button.innerText = "more info";
+
 }
