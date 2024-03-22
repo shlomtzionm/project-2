@@ -1,4 +1,5 @@
-class Coin {
+document.addEventListener("DOMContentLoaded",function()
+{class Coin {
   id: string;
   symbol: string;
   name: string;
@@ -11,48 +12,75 @@ class Coin {
 
 class CoinID {
   image: { small: string };
-  market_data: { current_price: { usd: number, eur: number, ils: number } };
-  constructor(image: { small: string }, market_data: { current_price: { usd: number, eur: number, ils: number } }) {
+  market_data: { current_price: { usd: number; eur: number; ils: number } };
+  constructor(
+    image: { small: string },
+    market_data: { current_price: { usd: number; eur: number; ils: number } }
+  ) {
     this.image = image;
     this.market_data = market_data;
   }
 }
 
-
 (async function () {
-  let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
+  let data = (await saveLocalStorage("list")) as Coin[]; 
+ buildCard(data)
+ })();
+ 
 
-  let data = (await saveLocalStorage("list")) as Coin[];
+let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
+let searchButton = document.querySelector(".search-button") as HTMLButtonElement
 
-  for (let i = 0; i < 9; i++) {
-    let card = createElement("div", ["card"], cardContainer) as HTMLElement;
-    let cardBody = createElement("div", ["card-body"], card) as HTMLElement;
-    let cardTitle = createElement("h5", ["card-title"], cardBody) as HTMLElement;
-    let cardText = createElement("p", ["card-text"], cardBody) as HTMLElement;
-    let button = createElement("button", ["btn", "btn-primary"], card) as HTMLButtonElement;
-    button.setAttribute("isTrue", "false");
+searchButton.addEventListener("click", handleSearch)
 
-    handelButtonInfo(cardTitle, cardText, button, data, i)
+async function handleSearch() {
+  let inputValue = (document.querySelector(".input") as HTMLInputElement).value.toLocaleLowerCase(); 
+  let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
+  let filteredData = dataFromLS.filter((coin) => coin.id.toLowerCase().includes(inputValue));
+  cardContainer.innerHTML = "";
+  buildCard(filteredData);
 
-    button.addEventListener("click", async function () {
-      
-      if (button.getAttribute("isTrue") === "false") {
-        cardText.innerHTML = "";
-        moreInfo(data, i, cardText, card);
-        button.setAttribute("isTrue", "true");
-      } else{
-        cardText.innerHTML =""
-        handelButtonInfo(cardTitle, cardText, button, data, i)
-        button.setAttribute("isTrue" , "false") 
-      }
-      cardText.innerHTML = "";
-    });
+}
+
+
+function buildCard(data: Coin[]) {
+  let cardsToShow = data.length > 100 ? data.slice(0, 80) : data; 
+  for (let i = 0; i < cardsToShow.length; i++) {
+    let card = createElement("div", "card", cardContainer) as HTMLElement;
+    let cardTitle = createElement("h5", "card-title", card) as HTMLElement;
+    let cardText = createElement("p", "card-text", card) as HTMLElement;
+    let button = createElement("button", "btn", card) as HTMLButtonElement;
+    button.setAttribute("isFalse", "false");
+
+    handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
+    button.addEventListener("click", (event) =>
+      handelInfoButton(button, cardText, cardsToShow, i, cardTitle)
+    );
   }
-})();
+}
 
 
-async function saveLocalStorage(key: string):Promise<(Coin []| CoinID)> {
-  let data:(Coin []| CoinID);
+function handelInfoButton(
+  button: HTMLButtonElement,
+  cardText: HTMLElement,
+  data: Coin[],
+  i: number,
+  cardTitle: HTMLElement
+) {
+  if (button.getAttribute("isFalse") === "false") {
+    cardText.innerHTML = "";
+    moreInfo(data, i, cardText);
+    button.setAttribute("isFalse", "true");
+  } else {
+    console.log(data[i].id);
+    handelCardInfo(cardTitle, cardText, button, data, i);
+    cardText.innerHTML = data[i].id;
+    button.setAttribute("isFalse", "false");
+  }
+}
+
+async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
+  let data: Coin[] | CoinID;
   if (!localStorage[key]) {
     data = await fetchData(key);
     localStorage.setItem(key, JSON.stringify(data));
@@ -63,45 +91,57 @@ async function saveLocalStorage(key: string):Promise<(Coin []| CoinID)> {
   return data;
 }
 
-async function fetchData(parameter: string): Promise<(Coin []| CoinID)> {
+async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
   let res = await fetch(`https://api.coingecko.com/api/v3/coins/${parameter}`);
   let data = await res.json();
   return data;
 }
 
-function createElement(
-  div: string,
-  classNames: string[],
-  appendTo: HTMLElement
-) {
+function createElement(div: string, className: string, appendTo: HTMLElement) {
   let element = document.createElement(div);
-  classNames.forEach((className) => {
-    element.classList.add(className);
-  });
+  element.classList.add(className);
   appendTo.appendChild(element);
   return element;
 }
 
+async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
+  let coinData = (await saveLocalStorage(data[i].id)) as CoinID;
 
-async function moreInfo(data: Coin[], i: number,cardBody:HTMLElement, card:HTMLElement) {
-  
-  let info = createElement("div",["info"],cardBody)
-  let coinData =  await saveLocalStorage(data[i].id) as CoinID
-  
-  let img = createElement("img",["img"],info) as HTMLImageElement
-  img.src = coinData.image.small
-  
-  let inf = createElement("p",["eur"], cardBody)
-  inf.innerText = coinData.market_data.current_price.eur.toString()
-  let ils = createElement("p",["eur"], cardBody)
-  ils.innerText = coinData.market_data.current_price.eur.toString()
-  let usd = createElement("p",["usd"], cardBody)
-  usd.innerText = coinData.market_data.current_price.usd.toString()
+  let img = createElement("img", "img", cardText) as HTMLImageElement;
+  img.src = coinData.image.small;
+  let ils = currentPrice(coinData, cardText, "ils");
+  ils.innerText += " ₪";
+  let eur = currentPrice(coinData, cardText, "eur");
+  eur.innerText += "  €";
+  let usd = currentPrice(coinData, cardText, "usd");
+  usd.innerText += " $";
 }
 
-function handelButtonInfo(cardTitle:HTMLElement, cardText:HTMLElement, button: HTMLButtonElement, data: Coin[], i:number){
+function handelCardInfo(
+  cardTitle: HTMLElement,
+  cardText: HTMLElement,
+  button: HTMLButtonElement,
+  data: Coin[],
+  i: number
+) {
   cardTitle.innerText = data[i].id;
   cardText.innerText = data[i].name;
   button.innerText = "more info";
-
 }
+
+function currentPrice(
+  coinData: CoinID,
+  cardText: HTMLElement,
+  country: string
+): HTMLElement {
+  let div = createElement("div", country, cardText);
+  let currency = coinData.market_data.current_price;
+  let price = currency[country as keyof typeof currency];
+  div.innerText = price ? price.toString() : "Price not available";
+  return div;
+}
+
+
+})
+
+
