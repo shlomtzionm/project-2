@@ -57,28 +57,24 @@ document.addEventListener("DOMContentLoaded", function () {
             handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
             button.addEventListener("click", (event) => handelInfoButton(button, cardText, cardsToShow, i, cardTitle));
         }
-        let toggles = document.querySelectorAll(".toggle");
-        handleToggles(toggles);
+        // let toggles = document.querySelectorAll(".toggle");
+        // handleToggles(toggles);
     }
-    function handleToggles(toggles) {
-        let checkedToggles = 0;
-        toggles.forEach((toggle) => {
-            toggle.addEventListener("click", function () {
-                if (checkedToggles < 5) {
-                    debugger;
-                    console.log(checkedToggles);
-                    checkedToggles++;
-                }
-                else {
-                    debugger;
-                    console.log(checkedToggles);
-                    toggles.forEach((toggle) => {
-                        toggle.setAttribute("disabled", "true");
-                    });
-                }
-            });
-        });
-    }
+    // function handleToggles(toggles: NodeListOf<Element>) {
+    //   let checkedToggles = 0 ;
+    //   toggles.forEach((toggle) => {
+    //     toggle.addEventListener("click", function () {
+    //       if (checkedToggles < 4) {
+    //         checkedToggles++;
+    //         console.log(checkedToggles)
+    //       } else {
+    //         toggles.forEach((toggle) => {
+    //           toggle.setAttribute("disabled", "true");
+    //         });
+    //       }
+    //     });
+    //   });
+    // }
     function createToggle(card) {
         let toggle = createElement("label", "switch", card);
         let input = createElement("input", "toggle", toggle);
@@ -93,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
             button.setAttribute("isFalse", "true");
         }
         else {
-            console.log(data[i].id);
             handelCardInfo(cardTitle, cardText, button, data, i);
             cardText.innerHTML = data[i].id;
             button.setAttribute("isFalse", "false");
@@ -109,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
             else {
                 data = JSON.parse(localStorage[key]);
             }
-            console.log(data);
             return data;
         });
     }

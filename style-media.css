@@ -1,0 +1,236 @@
+
+@media only screen and (max-width: 700px){
+    body{
+      background-image: url(back-ground.jpg);
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    width: 100%;
+    overflow-x: hidden;
+    }
+   
+  #navBar {
+    border-bottom: 1px solid black;
+    display: flex;
+    flex-direction: row-reverse;
+    height: 50px;
+    justify-content: space-between;
+  width: 100%;
+    
+  }
+  
+  .header {
+    display: flex;
+    height: 50px;
+    width: 100px;
+    align-items: center;
+    margin-left: 15px;
+  }
+  
+  #coinImage {
+    width: 50px;
+    height: 50px;
+    padding-top: 17px;
+  }
+  
+  #cardContainer {
+    margin: 35px auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    width: 910px;
+    justify-content: center;
+  }
+  
+  .btn-primary {
+    margin: 0px 0px 10px 15px;
+  }
+  
+  .img {
+    width: 100;
+    height: 100px;
+  }
+  
+  .tabs {
+    list-style: none;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    margin-left: 50px;
+  }
+  
+  .nav-item {
+    margin-right: 30px;
+  }
+  
+  .nav-item a {
+    text-decoration: none;
+    color: black;
+    padding: 10px;
+    transition: color 0.3s;
+  }
+  
+  .nav-item input {
+    border: 1px solid #000000;
+    border-radius: 4px;
+    background-color: transparent;
+    height: 30px;
+  }
+  
+  .nav-item button {
+    background-color: rgba(255, 255, 255, 0);
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    height: 30px;
+  }
+  
+  .nav-item button:hover {
+    background-color: #ffffff78;
+  }
+  .card {
+    background-color: #41a94170;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 170px;
+    display: inline-block; /* Display the cards as inline-block elements */
+    white-space: normal; /* Allow text to wrap onto the next line */
+    margin-left: 1px;
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: #333333;
+  }
+  
+  .card-text {
+    margin-left: -15px;
+    width: 150px;
+    font-size: 1rem;
+    color: #555555;
+  
+  
+  }
+  
+  .btn {
+    background-color: #00ff08;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
+  .btn:hover {
+    background-color: #0a870e;
+  }
+  
+  #about{
+  display: none;
+  }
+  
+  #liveReports{
+    display: none;
+  }
+  
+  #myPic {
+    display: block; 
+    width: 350px;
+    height: 350px; 
+    border-radius: 8px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+  }
+  
+  #flexContainer{
+    margin: 0px auto;
+    height: 500px;
+    width: 700px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    
+  justify-content: space-evenly}
+  
+  #aboutInfo{
+    background-color: #41a94170;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    height: 350px;
+    padding-left: 20px;
+    display: inline-block; 
+    white-space: normal; 
+  }
+  
+  
+  
+  
+  
+  /* The switch - the box around the slider */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-left: 120px;
+  
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #cccccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #828282;
+  }
+  
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }}

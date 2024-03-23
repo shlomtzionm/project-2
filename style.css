@@ -1,12 +1,13 @@
-body{
-  background-image: url(back-ground.jpg);
-  min-height: 500px;
-  background-attachment: fixed;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
 
+@media only screen and (min-width: 992px){
+  body{
+    background-image: url(back-ground.jpg);
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+ 
 #navBar {
   border-bottom: 1px solid black;
   display: flex;
@@ -230,4 +231,4 @@ input:checked + .slider:before {
 
 .slider.round:before {
   border-radius: 50%;
-}
+}}

@@ -66,28 +66,25 @@ document.addEventListener("DOMContentLoaded", function () {
         handelInfoButton(button, cardText, cardsToShow, i, cardTitle)
       );
     }
-    let toggles = document.querySelectorAll(".toggle");
-    handleToggles(toggles);
+    // let toggles = document.querySelectorAll(".toggle");
+    // handleToggles(toggles);
   }
-  function handleToggles(toggles: NodeListOf<Element>) {
-    let checkedToggles = 0;
+  // function handleToggles(toggles: NodeListOf<Element>) {
+  //   let checkedToggles = 0 ;
 
-    toggles.forEach((toggle) => {
-      toggle.addEventListener("click", function () {
-        if (checkedToggles < 5) {
-          debugger
-          console.log(checkedToggles)
-          checkedToggles++;
-        } else {
-          debugger
-          console.log(checkedToggles)
-          toggles.forEach((toggle) => {
-            toggle.setAttribute("disabled", "true");
-          });
-        }
-      });
-    });
-  }
+  //   toggles.forEach((toggle) => {
+  //     toggle.addEventListener("click", function () {
+  //       if (checkedToggles < 4) {
+  //         checkedToggles++;
+  //         console.log(checkedToggles)
+  //       } else {
+  //         toggles.forEach((toggle) => {
+  //           toggle.setAttribute("disabled", "true");
+  //         });
+  //       }
+  //     });
+  //   });
+  // }
 
   function createToggle(card: HTMLElement) {
     let toggle = createElement("label", "switch", card) as HTMLInputElement;
@@ -109,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
       moreInfo(data, i, cardText);
       button.setAttribute("isFalse", "true");
     } else {
-      console.log(data[i].id);
       handelCardInfo(cardTitle, cardText, button, data, i);
       cardText.innerHTML = data[i].id;
       button.setAttribute("isFalse", "false");
@@ -124,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
       data = JSON.parse(localStorage[key]);
     }
-    console.log(data);
     return data;
   }
 
