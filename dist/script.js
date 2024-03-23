@@ -35,15 +35,21 @@ document.addEventListener("DOMContentLoaded", function () {
         return __awaiter(this, void 0, void 0, function* () {
             let inputValue = document.querySelector(".input").value.toLocaleLowerCase();
             let dataFromLS = JSON.parse(localStorage["list"]);
-            let filteredData = dataFromLS.filter((coin) => coin.id.toLowerCase().includes(inputValue));
-            cardContainer.innerHTML = "";
-            buildCard(filteredData);
+            if (inputValue === "all") {
+                buildCard(dataFromLS);
+            }
+            else {
+                let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
+                cardContainer.innerHTML = "";
+                buildCard(filteredData);
+            }
         });
     }
     function buildCard(data) {
-        let cardsToShow = data.length > 100 ? data.slice(0, 80) : data;
+        let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
         for (let i = 0; i < cardsToShow.length; i++) {
             let card = createElement("div", "card", cardContainer);
+            createToggle(card);
             let cardTitle = createElement("h5", "card-title", card);
             let cardText = createElement("p", "card-text", card);
             let button = createElement("button", "btn", card);
@@ -51,6 +57,34 @@ document.addEventListener("DOMContentLoaded", function () {
             handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
             button.addEventListener("click", (event) => handelInfoButton(button, cardText, cardsToShow, i, cardTitle));
         }
+        let toggles = document.querySelectorAll(".toggle");
+        handleToggles(toggles);
+    }
+    function handleToggles(toggles) {
+        let checkedToggles = 0;
+        toggles.forEach((toggle) => {
+            toggle.addEventListener("click", function () {
+                if (checkedToggles < 5) {
+                    debugger;
+                    console.log(checkedToggles);
+                    checkedToggles++;
+                }
+                else {
+                    debugger;
+                    console.log(checkedToggles);
+                    toggles.forEach((toggle) => {
+                        toggle.setAttribute("disabled", "true");
+                    });
+                }
+            });
+        });
+    }
+    function createToggle(card) {
+        let toggle = createElement("label", "switch", card);
+        let input = createElement("input", "toggle", toggle);
+        input.type = "checkbox";
+        let span = createElement("span", "slider", toggle);
+        span.classList.add("round");
     }
     function handelInfoButton(button, cardText, data, i, cardTitle) {
         if (button.getAttribute("isFalse") === "false") {
@@ -106,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     function handelCardInfo(cardTitle, cardText, button, data, i) {
-        cardTitle.innerText = data[i].id;
+        cardTitle.innerText = data[i].symbol;
         cardText.innerText = data[i].name;
         button.innerText = "more info";
     }
@@ -117,4 +151,32 @@ document.addEventListener("DOMContentLoaded", function () {
         div.innerText = price ? price.toString() : "Price not available";
         return div;
     }
+    let homePage = document.querySelector("#home");
+    let aboutPage = document.querySelector("#about");
+    let liveReportsPage = document.querySelector("#liveReports");
+    let btnArray = document.querySelectorAll(".navButton");
+    function changePageContent() {
+        btnArray.forEach((btn) => {
+            btn.addEventListener("click", function () {
+                switch (btn.innerHTML) {
+                    case "Home":
+                        homePage.style.display = "block";
+                        aboutPage.style.display = "none";
+                        liveReportsPage.style.display = "none";
+                        break;
+                    case "About":
+                        homePage.style.display = "none";
+                        aboutPage.style.display = "block";
+                        liveReportsPage.style.display = "none";
+                        break;
+                    case "Live Reports":
+                        homePage.style.display = "none";
+                        aboutPage.style.display = "none";
+                        liveReportsPage.style.display = "block";
+                        break;
+                }
+            });
+        });
+    }
+    changePageContent();
 });
