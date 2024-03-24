@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function buildCard(data: Coin[]) {
     cardContainer.innerHTML = "";
+
+    
     let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
     for (let i = 0; i < cardsToShow.length; i++) {
       let card = createElement("div", "card", cardContainer) as HTMLElement;
