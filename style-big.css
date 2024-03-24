@@ -1,5 +1,6 @@
 
-@media only screen and (min-width: 992px){
+@media only screen and (min-device-width: 1200px) 
+and (max-device-width: 1600px){
   body{
     background-image: url(back-ground.jpg);
     background-attachment: fixed;
@@ -8,6 +9,8 @@
     background-size: cover;
   }
  
+
+
 #navBar {
   border-bottom: 1px solid black;
   display: flex;
@@ -54,6 +57,7 @@
   list-style: none;
   padding: 5px;
   display: flex;
+  flex-direction: row-reverse;
   align-items: center;
   margin-left: 50px;
 }

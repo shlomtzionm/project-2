@@ -1,22 +1,23 @@
 
-@media only screen and (max-width: 700px){
+@media only screen and (min-device-width: 768px) 
+and (max-device-width: 1024px){
     body{
       background-image: url(back-ground.jpg);
       background-attachment: fixed;
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
-    width: 100%;
-    overflow-x: hidden;
     }
    
+  
+  
   #navBar {
     border-bottom: 1px solid black;
     display: flex;
     flex-direction: row-reverse;
     height: 50px;
     justify-content: space-between;
-  width: 100%;
+  
     
   }
   
@@ -56,6 +57,7 @@
     list-style: none;
     padding: 5px;
     display: flex;
+    flex-direction: row-reverse;
     align-items: center;
     margin-left: 50px;
   }

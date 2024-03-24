@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function buildCard(data: Coin[]) {
     cardContainer.innerHTML = "";
 
-    
+
     let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
     for (let i = 0; i < cardsToShow.length; i++) {
       let card = createElement("div", "card", cardContainer) as HTMLElement;
@@ -185,6 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let homePage = document.querySelector("#home") as HTMLElement;
   let aboutPage = document.querySelector("#about") as HTMLElement;
   let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
+  let input = document.querySelector(".input") as HTMLInputElement;
   let btnArray = document.querySelectorAll(".navButton");
 
   function changePageContent() {
@@ -192,16 +193,19 @@ document.addEventListener("DOMContentLoaded", function () {
       btn.addEventListener("click", function () {
         switch (btn.innerHTML) {
           case "Home":
+            input.disabled = false
             homePage.style.display = "block";
             aboutPage.style.display = "none";
             liveReportsPage.style.display = "none";
             break;
           case "About":
+            input.disabled = true
             homePage.style.display = "none";
             aboutPage.style.display = "block";
             liveReportsPage.style.display = "none";
             break;
           case "Live Reports":
+            input.disabled = true
             homePage.style.display = "none";
             aboutPage.style.display = "none";
             liveReportsPage.style.display = "block";

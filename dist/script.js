@@ -148,22 +148,26 @@ document.addEventListener("DOMContentLoaded", function () {
     let homePage = document.querySelector("#home");
     let aboutPage = document.querySelector("#about");
     let liveReportsPage = document.querySelector("#liveReports");
+    let input = document.querySelector(".input");
     let btnArray = document.querySelectorAll(".navButton");
     function changePageContent() {
         btnArray.forEach((btn) => {
             btn.addEventListener("click", function () {
                 switch (btn.innerHTML) {
                     case "Home":
+                        input.disabled = false;
                         homePage.style.display = "block";
                         aboutPage.style.display = "none";
                         liveReportsPage.style.display = "none";
                         break;
                     case "About":
+                        input.disabled = true;
                         homePage.style.display = "none";
                         aboutPage.style.display = "block";
                         liveReportsPage.style.display = "none";
                         break;
                     case "Live Reports":
+                        input.disabled = true;
                         homePage.style.display = "none";
                         aboutPage.style.display = "none";
                         liveReportsPage.style.display = "block";
