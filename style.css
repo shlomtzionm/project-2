@@ -1,86 +1,80 @@
+body {
+    background-image: url(back-ground.jpg);
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow-x: hidden;
+}
 
-@media only screen and (min-device-width: 768px) 
-and (max-device-width: 1024px){
-    body{
-      background-image: url(back-ground.jpg);
-      background-attachment: fixed;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-   
-  
-  
-  #navBar {
+#navBar {
     border-bottom: 1px solid black;
     display: flex;
-    flex-direction: row-reverse;
     height: 50px;
     justify-content: space-between;
-  
-    
-  }
-  
-  .header {
+    width: 100%;
+    flex-direction: row-reverse;
+}
+
+.header {
     display: flex;
     height: 50px;
     width: 100px;
     align-items: center;
     margin-left: 15px;
-  }
-  
-  #coinImage {
+}
+
+#coinImage {
     width: 50px;
     height: 50px;
     padding-top: 17px;
-  }
-  
-  #cardContainer {
+}
+
+#cardContainer {
     margin: 35px auto;
     display: flex;
     flex-wrap: wrap;
     align-content: center;
-    width: 910px;
+    width: 900px;
     justify-content: center;
-  }
-  
-  .btn-primary {
+}
+
+.btn-primary {
     margin: 0px 0px 10px 15px;
-  }
-  
-  .img {
+}
+
+.img {
     width: 100;
     height: 100px;
-  }
-  
-  .tabs {
+}
+
+.tabs {
     list-style: none;
     padding: 5px;
     display: flex;
-    flex-direction: row-reverse;
     align-items: center;
     margin-left: 50px;
-  }
-  
-  .nav-item {
+}
+
+.nav-item {
     margin-right: 30px;
-  }
-  
-  .nav-item a {
+}
+
+.nav-item a {
     text-decoration: none;
     color: black;
     padding: 10px;
     transition: color 0.3s;
-  }
-  
-  .nav-item input {
+}
+
+.nav-item input {
     border: 1px solid #000000;
     border-radius: 4px;
     background-color: transparent;
     height: 30px;
-  }
-  
-  .nav-item button {
+}
+
+.nav-item button {
     background-color: rgba(255, 255, 255, 0);
     color: rgb(0, 0, 0);
     border: none;
@@ -89,111 +83,101 @@ and (max-device-width: 1024px){
     cursor: pointer;
     transition: background-color 0.3s;
     height: 30px;
-  }
-  
-  .nav-item button:hover {
+}
+
+.nav-item button:hover {
     background-color: #ffffff78;
-  }
-  .card {
+}
+
+.myCard {
     background-color: #41a94170;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
-    width: 170px;
-    display: inline-block; /* Display the cards as inline-block elements */
-    white-space: normal; /* Allow text to wrap onto the next line */
+    width: 210px;
+    display: inline-block;
+    white-space: normal;
     margin-left: 1px;
-  }
-  
-  .card-title {
+}
+
+.MY-card-title {
     font-size: 1.25rem;
     margin-bottom: 10px;
     color: #333333;
-  }
-  
-  .card-text {
+}
+
+.MY-card-text {
     margin-left: -15px;
     width: 150px;
     font-size: 1rem;
     color: #555555;
-  
-  
-  }
-  
-  .btn {
+}
+
+.btn {
     background-color: #00ff08;
     color: #ffffff;
     border: none;
     border-radius: 4px;
     padding: 8px 16px;
     cursor: pointer;
-  }
-  
-  .btn:hover {
+}
+
+.btn:hover {
     background-color: #0a870e;
-  }
-  
-  #about{
-  display: none;
-  }
-  
-  #liveReports{
+}
+
+#about, #liveReports {
     display: none;
-  }
-  
-  #myPic {
-    display: block; 
+}
+
+#myPic {
+    display: block;
     width: 350px;
-    height: 350px; 
-    border-radius: 8px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
-  }
-  
-  #flexContainer{
+    height: 350px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#flexContainer {
     margin: 0px auto;
     height: 500px;
     width: 700px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    
-  justify-content: space-evenly}
-  
-  #aboutInfo{
+    justify-content: space-evenly;
+}
+
+#aboutInfo {
     background-color: #41a94170;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 300px;
     height: 350px;
     padding-left: 20px;
-    display: inline-block; 
-    white-space: normal; 
-  }
-  
-  
-  
-  
-  
-  /* The switch - the box around the slider */
-  .switch {
+    display: inline-block;
+    white-space: normal;
+}
+
+/* The switch - the box around the slider */
+.switch {
     position: relative;
     display: inline-block;
     width: 60px;
     height: 34px;
     margin-left: 120px;
-  
-  }
-  
-  /* Hide default HTML checkbox */
-  .switch input {
+}
+
+/* Hide default HTML checkbox */
+.switch input {
     opacity: 0;
     width: 0;
     height: 0;
-  }
-  
-  /* The slider */
-  .slider {
+}
+
+/* The slider */
+.slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -201,11 +185,10 @@ and (max-device-width: 1024px){
     right: 0;
     bottom: 0;
     background-color: #cccccc;
-    -webkit-transition: .4s;
     transition: .4s;
-  }
-  
-  .slider:before {
+}
+
+.slider:before {
     position: absolute;
     content: "";
     height: 26px;
@@ -213,26 +196,80 @@ and (max-device-width: 1024px){
     left: 4px;
     bottom: 4px;
     background-color: white;
-    -webkit-transition: .4s;
     transition: .4s;
-  }
-  
-  input:checked + .slider {
+}
+
+input:checked + .slider {
     background-color: #828282;
-  }
-  
-  
-  input:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
+}
+
+input:checked + .slider:before {
     transform: translateX(26px);
-  }
-  
-  /* Rounded sliders */
-  .slider.round {
+}
+
+/* Rounded sliders */
+.slider.round {
     border-radius: 34px;
-  }
-  
-  .slider.round:before {
+}
+
+.slider.round:before {
     border-radius: 50%;
-  }}
+}
+
+.spinner-border{
+    display: block;
+    margin: auto;
+}
+
+/* Media Queries */
+@media only screen and (max-width: 600px) {
+    .search {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #navBar {
+        flex-direction: column-reverse;
+        height: 150px;
+        margin-top: 100px;
+    }
+
+    .tabs {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #cardContainer{
+        width: 100%;
+    }
+    #flexContainer{
+        flex-direction: column-reverse;
+        width: 100%;
+        margin-top: 20px;
+        justify-content: space-between;
+    }
+}
+
+@media only screen and (min-width: 601px) and (max-width: 900px) {
+  
+    #navBar {
+        flex-direction: column-reverse;
+        height: 150px;
+    
+    }
+
+    .tabs {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    .search {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        
+    }
+    #cardContainer{
+        width: 100%;
+    }
+}

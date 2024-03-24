@@ -22,9 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
             this.market_data = market_data;
         }
     }
+    let homePage = document.querySelector("#home");
+    let aboutPage = document.querySelector("#about");
+    let liveReportsPage = document.querySelector("#liveReports");
+    let input = document.querySelector(".input");
+    let btnArray = document.querySelectorAll(".navButton");
     (function () {
         return __awaiter(this, void 0, void 0, function* () {
+            let spinnerElement = spinner(homePage);
             let data = (yield saveLocalStorage("list"));
+            spinnerElement.style.display = "none";
             buildCard(data);
         });
     })();
@@ -48,33 +55,38 @@ document.addEventListener("DOMContentLoaded", function () {
         cardContainer.innerHTML = "";
         let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
         for (let i = 0; i < cardsToShow.length; i++) {
-            let card = createElement("div", "card", cardContainer);
+            let card = createElement("div", "myCard", cardContainer);
             createToggle(card);
-            let cardTitle = createElement("h5", "card-title", card);
-            let cardText = createElement("p", "card-text", card);
+            let cardTitle = createElement("h5", "MY-card-title", card);
+            let cardText = createElement("p", "MY-card-text", card);
             let button = createElement("button", "btn", card);
             button.setAttribute("isFalse", "false");
             handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
-            button.addEventListener("click", (event) => handelInfoButton(button, cardText, cardsToShow, i, cardTitle));
+            button.addEventListener("click", (event) => {
+                handelInfoButton(button, cardText, cardsToShow, i, cardTitle);
+            });
         }
         // let toggles = document.querySelectorAll(".toggle");
         // handleToggles(toggles);
     }
-    // function handleToggles(toggles: NodeListOf<Element>) {
-    //   let checkedToggles = 0 ;
-    //   toggles.forEach((toggle) => {
-    //     toggle.addEventListener("click", function () {
-    //       if (checkedToggles < 4) {
-    //         checkedToggles++;
-    //         console.log(checkedToggles)
-    //       } else {
-    //         toggles.forEach((toggle) => {
-    //           toggle.setAttribute("disabled", "true");
-    //         });
-    //       }
+    //   function handleToggles(toggles: NodeListOf<Element>) {
+    //     let checkedToggles = 0 ;
+    //     toggles.forEach((toggle) => {
+    //       toggle.addEventListener("click", function () {
+    //         if (checkedToggles < 4) {
+    //           checkedToggles++;
+    //           console.log(checkedToggles)
+    //         } else {
+    //           toggles.forEach((toggle) => {
+    //             toggle.setAttribute("disabled", "true");
+    //           })
+    //         }
+    //         if(toggle.getAttribute("disabled")){
+    // alert("1111")
+    //         }
+    //       });
     //     });
-    //   });
-    // }
+    //   }
     function createToggle(card) {
         let toggle = createElement("label", "switch", card);
         let input = createElement("input", "toggle", toggle);
@@ -83,6 +95,8 @@ document.addEventListener("DOMContentLoaded", function () {
         span.classList.add("round");
     }
     function handelInfoButton(button, cardText, data, i, cardTitle) {
+        spinner(cardText);
+        debugger;
         if (button.getAttribute("isFalse") === "false") {
             cardText.innerHTML = "";
             moreInfo(data, i, cardText);
@@ -99,10 +113,20 @@ document.addEventListener("DOMContentLoaded", function () {
             let data;
             if (!localStorage[key]) {
                 data = yield fetchData(key);
+                localStorage.setItem("TTL", JSON.stringify(new Date().getTime()));
                 localStorage.setItem(key, JSON.stringify(data));
             }
             else {
-                data = JSON.parse(localStorage[key]);
+                let storedTTL = new Date(localStorage.getItem("TTL"));
+                let currentDate = new Date().getTime();
+                if (currentDate - storedTTL.getTime() > 24 * 60 * 60 * 1000) {
+                    data = yield fetchData(key);
+                    localStorage.setItem("TTL", new Date().getTime().toString());
+                    localStorage.setItem(key, JSON.stringify(data));
+                }
+                else {
+                    data = JSON.parse(localStorage.getItem(key));
+                }
             }
             return data;
         });
@@ -145,11 +169,6 @@ document.addEventListener("DOMContentLoaded", function () {
         div.innerText = price ? price.toString() : "Price not available";
         return div;
     }
-    let homePage = document.querySelector("#home");
-    let aboutPage = document.querySelector("#about");
-    let liveReportsPage = document.querySelector("#liveReports");
-    let input = document.querySelector(".input");
-    let btnArray = document.querySelectorAll(".navButton");
     function changePageContent() {
         btnArray.forEach((btn) => {
             btn.addEventListener("click", function () {
@@ -177,4 +196,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
     changePageContent();
+    function spinner(appendTo) {
+        let border = createElement("div", "spinner-border", appendTo);
+        border.setAttribute("role", "status");
+        createElement("span", "sr-only", border);
+        return border;
+    }
 });

@@ -22,8 +22,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+
+  let homePage = document.querySelector("#home") as HTMLElement;
+  let aboutPage = document.querySelector("#about") as HTMLElement;
+  let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
+  let input = document.querySelector(".input") as HTMLInputElement;
+  let btnArray = document.querySelectorAll(".navButton");
+
+
   (async function () {
+   let spinnerElement:HTMLElement = spinner(homePage)
     let data = (await saveLocalStorage("list")) as Coin[];
+    spinnerElement.style.display ="none"
     buildCard(data);
   })();
 
@@ -52,42 +62,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function buildCard(data: Coin[]) {
     cardContainer.innerHTML = "";
-
-
     let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
     for (let i = 0; i < cardsToShow.length; i++) {
-      let card = createElement("div", "card", cardContainer) as HTMLElement;
+      let card = createElement("div", "myCard", cardContainer) as HTMLElement;
       createToggle(card);
 
-      let cardTitle = createElement("h5", "card-title", card) as HTMLElement;
-      let cardText = createElement("p", "card-text", card) as HTMLElement;
+      let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
+      let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
       let button = createElement("button", "btn", card) as HTMLButtonElement;
       button.setAttribute("isFalse", "false");
 
       handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
       button.addEventListener("click", (event) =>
-        handelInfoButton(button, cardText, cardsToShow, i, cardTitle)
+        {
+          handelInfoButton(button, cardText, cardsToShow, i, cardTitle)}
       );
     }
     // let toggles = document.querySelectorAll(".toggle");
     // handleToggles(toggles);
   }
-  // function handleToggles(toggles: NodeListOf<Element>) {
-  //   let checkedToggles = 0 ;
+//   function handleToggles(toggles: NodeListOf<Element>) {
+//     let checkedToggles = 0 ;
 
-  //   toggles.forEach((toggle) => {
-  //     toggle.addEventListener("click", function () {
-  //       if (checkedToggles < 4) {
-  //         checkedToggles++;
-  //         console.log(checkedToggles)
-  //       } else {
-  //         toggles.forEach((toggle) => {
-  //           toggle.setAttribute("disabled", "true");
-  //         });
-  //       }
-  //     });
-  //   });
-  // }
+//     toggles.forEach((toggle) => {
+//       toggle.addEventListener("click", function () {
+//         if (checkedToggles < 4) {
+//           checkedToggles++;
+//           console.log(checkedToggles)
+//         } else {
+//           toggles.forEach((toggle) => {
+//             toggle.setAttribute("disabled", "true");
+//           })
+//         }
+//         if(toggle.getAttribute("disabled")){
+// alert("1111")
+//         }
+//       });
+//     });
+//   }
 
   function createToggle(card: HTMLElement) {
     let toggle = createElement("label", "switch", card) as HTMLInputElement;
@@ -104,6 +116,8 @@ document.addEventListener("DOMContentLoaded", function () {
     i: number,
     cardTitle: HTMLElement
   ) {
+    spinner(cardText)
+    debugger
     if (button.getAttribute("isFalse") === "false") {
       cardText.innerHTML = "";
       moreInfo(data, i, cardText);
@@ -117,19 +131,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
     let data: Coin[] | CoinID;
-    if (!localStorage[key]) {
-      data = await fetchData(key);
-      localStorage.setItem(key, JSON.stringify(data));
+    let storedTTL :Date= localStorage.getItem("TTL");
+    let currentDate = new Date().getTime();
+    if ( (currentDate - storedTTL.getTime()) > 24 * 60 * 60 * 1000) {
+        data = await fetchData(key);
+        localStorage.setItem("TTL", JSON.stringify(new Date().getTime()));
+        localStorage.setItem(key, JSON.stringify(data));
     } else {
-      data = JSON.parse(localStorage[key]);
+        data = JSON.parse(localStorage.getItem(key) as string);
     }
     return data;
-  }
+}
+
+
 
   async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
     let res = await fetch(
       `https://api.coingecko.com/api/v3/coins/${parameter}`
-    );
+    )
     let data = await res.json();
     return data;
   }
@@ -147,7 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
     let coinData = (await saveLocalStorage(data[i].id)) as CoinID;
-
     let img = createElement("img", "img", cardText) as HTMLImageElement;
     img.src = coinData.image.small;
     let ils = currentPrice(coinData, cardText, "ils");
@@ -182,11 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return div;
   }
 
-  let homePage = document.querySelector("#home") as HTMLElement;
-  let aboutPage = document.querySelector("#about") as HTMLElement;
-  let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
-  let input = document.querySelector(".input") as HTMLInputElement;
-  let btnArray = document.querySelectorAll(".navButton");
+ 
 
   function changePageContent() {
     btnArray.forEach((btn) => {
@@ -215,4 +229,13 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
   changePageContent();
+
+
+
+  function spinner (appendTo: HTMLElement) :HTMLElement{
+    let border = createElement("div", "spinner-border", appendTo )
+    border.setAttribute("role","status")
+    createElement("span", "sr-only", border)
+    return border
+  }
 });
