@@ -148,6 +148,13 @@ cardDetails(dataFromLS);
     }
   }
 
+
+  function getData(){}
+
+
+
+
+
   async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
     let data: Coin[] | CoinID;
     let storedTTL = new Date(localStorage.getItem(`TTL ${key}`) as string);
@@ -255,4 +262,9 @@ cardDetails(dataFromLS);
 
 function alertToggles(){
   alert("you must choose up to five coins!")
+
+
+
+
+  
 }
