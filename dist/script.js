@@ -40,9 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchButton.addEventListener("click", handleSearch);
     function handleSearch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let inputValue = document.querySelector(".input").value
-                .trim()
-                .toLocaleLowerCase();
+            let inputValue = document.querySelector(".input").value.trim().toLocaleLowerCase();
             let dataFromLS = JSON.parse(localStorage["list"]);
             if (inputValue === "all") {
                 cardDetails(dataFromLS);

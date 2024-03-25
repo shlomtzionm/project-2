@@ -44,13 +44,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function handleSearch() {
     let inputValue = (
-      document.querySelector(".input") as HTMLInputElement
-    ).value
-      .trim()
-      .toLocaleLowerCase();
+      document.querySelector(".input") as HTMLInputElement).value.trim().toLocaleLowerCase();
     let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
-    if (inputValue === "all") {
-      cardDetails(dataFromLS);
+ if (inputValue === "all") {
+cardDetails(dataFromLS);
     } else {
       let filteredData = dataFromLS.filter(
         (coin) => coin.symbol.toLowerCase() === inputValue
