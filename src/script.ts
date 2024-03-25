@@ -149,17 +149,23 @@ cardDetails(dataFromLS);
   }
 
 
-  function getData(){}
 
+function getData (){
+  let storedTTL = new Date(localStorage.getItem(`TTL list`)).getTime();
+    let currentDate = new Date().getTime();
+  }
+
+function checkIfDatOld(storedTTL:string , currentDate: number){
+   currentDate - storedTTL.getTime() < 2 * 60 * 1000
+}
 
 
 
 
   async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
     let data: Coin[] | CoinID;
-    let storedTTL = new Date(localStorage.getItem(`TTL ${key}`) as string);
-    let currentDate = new Date().getTime();
-    if (currentDate - storedTTL.getTime() < 2 * 60 * 1000) {
+  
+    if () {
       data = JSON.parse(localStorage.getItem(key) as string);
     } else {
       data = await fetchData(key);
@@ -168,6 +174,8 @@ cardDetails(dataFromLS);
     }
     return data;
   }
+
+
 
   async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
     let res = await fetch(
@@ -266,5 +274,5 @@ function alertToggles(){
 
 
 
-  
+
 }
