@@ -81,7 +81,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function handleToggles(toggles) {
         toggles.forEach((toggle) => {
-            toggle.addEventListener("click", (event) => toggleChangeHandler(event, toggles));
+            toggle.addEventListener("click", (event) => {
+                toggleChangeHandler(event, toggles);
+                if (toggle.disabled) {
+                    debugger;
+                    alertToggles();
+                }
+            });
         });
     }
     let checkedToggles = 0;
@@ -215,6 +221,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return border;
     }
 });
-function alretToggles() {
+function alertToggles() {
     alert("you must choose up to five coins!");
 }

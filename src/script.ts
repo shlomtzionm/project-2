@@ -90,8 +90,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function handleToggles(toggles: NodeListOf<Element>) {
     toggles.forEach((toggle) => {
-      toggle.addEventListener("click", (event) =>
-        toggleChangeHandler(event, toggles)
+      toggle.addEventListener("click", (event) =>{
+        toggleChangeHandler(event, toggles);
+        if((toggle as HTMLInputElement).disabled){
+          debugger
+          alertToggles()
+        }}
       );
     });
   }
@@ -115,6 +119,8 @@ document.addEventListener("DOMContentLoaded", function () {
         (toggle as HTMLInputElement).removeAttribute("disabled");
       });
     }
+
+ 
   }
 
   function createToggle(card: HTMLElement) {
@@ -250,6 +256,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-function alretToggles(){
+function alertToggles(){
   alert("you must choose up to five coins!")
 }
