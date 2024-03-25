@@ -40,7 +40,9 @@ document.addEventListener("DOMContentLoaded", function () {
     searchButton.addEventListener("click", handleSearch);
     function handleSearch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let inputValue = document.querySelector(".input").value.trim().toLocaleLowerCase();
+            let inputValue = document.querySelector(".input").value
+                .trim()
+                .toLocaleLowerCase();
             let dataFromLS = JSON.parse(localStorage["list"]);
             if (inputValue === "all") {
                 cardDetails(dataFromLS);
@@ -70,42 +72,40 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     }
-    let toggles = document.querySelectorAll(".toggle");
     function cardDetails(data) {
         cardContainer.innerHTML = "";
         let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
         buildCards(cardsToShow);
+        const toggles = document.querySelectorAll('input[type="checkbox"]');
+        handleToggles(toggles);
     }
     function handleToggles(toggles) {
-        let checkedToggles = 0;
-        toggles.forEach(toggle => {
-            toggle.addEventListener("change", function toggleChangeHandler() {
-                if (toggle.checked) {
-                    checkedToggles++;
-                    console.log(checkedToggles);
-                }
-                else {
-                    checkedToggles--;
-                    console.log(checkedToggles);
-                }
-                if (checkedToggles >= 4) {
-                    toggles.forEach(toggle => {
-                        if (!toggle.checked) {
-                            toggle.setAttribute("disabled", "true");
-                        }
-                    });
-                }
-                else {
-                    toggles.forEach(toggle => {
-                        toggle.removeAttribute("disabled");
-                    });
+        toggles.forEach((toggle) => {
+            toggle.addEventListener("click", (event) => toggleChangeHandler(event, toggles));
+        });
+    }
+    let checkedToggles = 0;
+    function toggleChangeHandler(event, toggles) {
+        const target = event.target;
+        if (target.checked) {
+            checkedToggles++;
+        }
+        else {
+            checkedToggles--;
+        }
+        if (checkedToggles >= 5) {
+            toggles.forEach((toggle) => {
+                if (!toggle.checked) {
+                    toggle.setAttribute("disabled", "true");
                 }
             });
-        });
-        // Log toggles here
-        console.log(toggles);
+        }
+        else {
+            toggles.forEach((toggle) => {
+                toggle.removeAttribute("disabled");
+            });
+        }
     }
-    handleToggles(toggles);
     function createToggle(card) {
         let toggle = createElement("label", "switch", card);
         let input = createElement("input", "toggle", toggle);
@@ -132,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let data;
             let storedTTL = new Date(localStorage.getItem(`TTL ${key}`));
             let currentDate = new Date().getTime();
-            if ((currentDate - storedTTL.getTime()) < 2 * 60 * 1000) {
+            if (currentDate - storedTTL.getTime() < 2 * 60 * 1000) {
                 data = JSON.parse(localStorage.getItem(key));
             }
             else {
@@ -215,3 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return border;
     }
 });
+function alretToggles() {
+    alert("you must choose up to five coins!");
+}

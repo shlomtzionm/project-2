@@ -22,18 +22,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
   let homePage = document.querySelector("#home") as HTMLElement;
   let aboutPage = document.querySelector("#about") as HTMLElement;
   let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
   let input = document.querySelector(".input") as HTMLInputElement;
   let btnArray = document.querySelectorAll(".navButton");
 
-
   (async function () {
-   let spinnerElement:HTMLElement = spinner(homePage)
+    let spinnerElement: HTMLElement = spinner(homePage);
     let data = (await saveLocalStorage("list")) as Coin[];
-    spinnerElement.style.display ="none"
+    spinnerElement.style.display = "none";
     cardDetails(data);
   })();
 
@@ -45,78 +43,79 @@ document.addEventListener("DOMContentLoaded", function () {
   searchButton.addEventListener("click", handleSearch);
 
   async function handleSearch() {
-    let inputValue = (document.querySelector(".input") as HTMLInputElement ).value.trim().toLocaleLowerCase();
+    let inputValue = (
+      document.querySelector(".input") as HTMLInputElement
+    ).value
+      .trim()
+      .toLocaleLowerCase();
     let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
     if (inputValue === "all") {
       cardDetails(dataFromLS);
     } else {
-      let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
-        if(filteredData.length === 0){alert("we didnt fined that, try again!")} else{cardDetails(filteredData);}
-        
+      let filteredData = dataFromLS.filter(
+        (coin) => coin.symbol.toLowerCase() === inputValue
+      );
+      if (filteredData.length === 0) {
+        alert("we didnt fined that, try again!");
+      } else {
+        cardDetails(filteredData);
+      }
     }
   }
 
+  function buildCards(cardsToShow: Coin[]) {
+    for (let i = 0; i < cardsToShow.length; i++) {
+      let card = createElement("div", "myCard", cardContainer) as HTMLElement;
+      createToggle(card);
 
-function buildCards(cardsToShow:Coin[]){
-  for (let i = 0; i < cardsToShow.length; i++) {
-    let card = createElement("div", "myCard", cardContainer) as HTMLElement;
-    createToggle(card);
+      let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
+      let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
+      let button = createElement("button", "btn", card) as HTMLButtonElement;
+      button.setAttribute("isFalse", "false");
 
-    let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
-    let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
-    let button = createElement("button", "btn", card) as HTMLButtonElement;
-    button.setAttribute("isFalse", "false");
-
-    handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
-    button.addEventListener("click", (event) =>
-      {
-        handelInfoButton(button, cardText, cardsToShow, i, cardTitle)}
-    );
+      handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
+      button.addEventListener("click", (event) => {
+        handelInfoButton(button, cardText, cardsToShow, i, cardTitle);
+      });
+    }
   }
-}
-
-let toggles = document.querySelectorAll(".toggle");
 
   function cardDetails(data: Coin[]) {
     cardContainer.innerHTML = "";
     let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
-  buildCards(cardsToShow)
- 
+    buildCards(cardsToShow);
+    const toggles = document.querySelectorAll('input[type="checkbox"]');
+    handleToggles(toggles);
   }
 
-function handleToggles(toggles: NodeListOf<Element>) {
-  let checkedToggles = 0;
-
-  toggles.forEach(toggle => {
-    toggle.addEventListener("change", function toggleChangeHandler() {
-      if ((toggle as HTMLInputElement).checked) {
-        checkedToggles++;
-        console.log(checkedToggles);
-      } else {
-        checkedToggles--;
-        console.log(checkedToggles);
-      }
-
-      if (checkedToggles >= 4) {
-        toggles.forEach(toggle => {
-          if (!(toggle as HTMLInputElement).checked) {
-            toggle.setAttribute("disabled", "true");
-          }
-        });
-      } else {
-        toggles.forEach(toggle => {
-          toggle.removeAttribute("disabled");
-        });
-      }
+  function handleToggles(toggles: NodeListOf<Element>) {
+    toggles.forEach((toggle) => {
+      toggle.addEventListener("click", (event) =>
+        toggleChangeHandler(event, toggles)
+      );
     });
-  });
+  }
 
-  // Log toggles here
-  console.log(toggles);
-}
-handleToggles(toggles)
+  let checkedToggles = 0;
+  function toggleChangeHandler(event: Event, toggles: NodeListOf<Element>) {
+    const target = event.target as HTMLInputElement;
 
+    if (target.checked) {
+      checkedToggles++;
+    } else {
+      checkedToggles--;
+    }
 
+    if (checkedToggles >= 5) {
+      toggles.forEach((toggle) => {
+        if (!(toggle as HTMLInputElement).checked) {
+          (toggle as HTMLInputElement).setAttribute("disabled", "true"); } });
+    } else {
+      toggles.forEach((toggle) => {
+        (toggle as HTMLInputElement).removeAttribute("disabled");
+      });
+    }
+  }
 
   function createToggle(card: HTMLElement) {
     let toggle = createElement("label", "switch", card) as HTMLInputElement;
@@ -133,8 +132,8 @@ handleToggles(toggles)
     i: number,
     cardTitle: HTMLElement
   ) {
-    spinner(cardText)
-    debugger
+    spinner(cardText);
+    debugger;
     if (button.getAttribute("isFalse") === "false") {
       cardText.innerHTML = "";
       moreInfo(data, i, cardText);
@@ -150,22 +149,20 @@ handleToggles(toggles)
     let data: Coin[] | CoinID;
     let storedTTL = new Date(localStorage.getItem(`TTL ${key}`) as string);
     let currentDate = new Date().getTime();
-    if ((currentDate - storedTTL.getTime()) < 2 * 60 * 1000) { 
-              data = JSON.parse(localStorage.getItem(key) as string); 
+    if (currentDate - storedTTL.getTime() < 2 * 60 * 1000) {
+      data = JSON.parse(localStorage.getItem(key) as string);
     } else {
-        data = await fetchData(key); 
-        localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date())); 
-        localStorage.setItem(key, JSON.stringify(data)); 
+      data = await fetchData(key);
+      localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date()));
+      localStorage.setItem(key, JSON.stringify(data));
     }
     return data;
-}
-
-
+  }
 
   async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
     let res = await fetch(
       `https://api.coingecko.com/api/v3/coins/${parameter}`
-    )
+    );
     let data = await res.json();
     return data;
   }
@@ -217,26 +214,24 @@ handleToggles(toggles)
     return div;
   }
 
- 
-
   function changePageContent() {
     btnArray.forEach((btn) => {
       btn.addEventListener("click", function () {
         switch (btn.innerHTML) {
           case "Home":
-            input.disabled = false
+            input.disabled = false;
             homePage.style.display = "block";
             aboutPage.style.display = "none";
             liveReportsPage.style.display = "none";
             break;
           case "About":
-            input.disabled = true
+            input.disabled = true;
             homePage.style.display = "none";
             aboutPage.style.display = "block";
             liveReportsPage.style.display = "none";
             break;
           case "Live Reports":
-            input.disabled = true
+            input.disabled = true;
             homePage.style.display = "none";
             aboutPage.style.display = "none";
             liveReportsPage.style.display = "block";
@@ -247,12 +242,14 @@ handleToggles(toggles)
   }
   changePageContent();
 
-
-
-  function spinner (appendTo: HTMLElement) :HTMLElement{
-    let border = createElement("div", "spinner-border", appendTo )
-    border.setAttribute("role","status")
-    createElement("span", "sr-only", border)
-    return border
+  function spinner(appendTo: HTMLElement): HTMLElement {
+    let border = createElement("div", "spinner-border", appendTo);
+    border.setAttribute("role", "status");
+    createElement("span", "sr-only", border);
+    return border;
   }
 });
+
+function alretToggles(){
+  alert("you must choose up to five coins!")
+}
