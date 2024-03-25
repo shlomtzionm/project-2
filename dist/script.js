@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let spinnerElement = spinner(homePage);
             let data = (yield saveLocalStorage("list"));
             spinnerElement.style.display = "none";
-            buildCard(data);
+            cardDetails(data);
         });
     })();
     let cardContainer = document.querySelector("#cardContainer");
@@ -40,20 +40,23 @@ document.addEventListener("DOMContentLoaded", function () {
     searchButton.addEventListener("click", handleSearch);
     function handleSearch() {
         return __awaiter(this, void 0, void 0, function* () {
-            let inputValue = document.querySelector(".input").value.toLocaleLowerCase();
+            let inputValue = document.querySelector(".input").value.trim().toLocaleLowerCase();
             let dataFromLS = JSON.parse(localStorage["list"]);
             if (inputValue === "all") {
-                buildCard(dataFromLS);
+                cardDetails(dataFromLS);
             }
             else {
                 let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
-                buildCard(filteredData);
+                if (filteredData.length === 0) {
+                    alert("we didnt fined that, try again!");
+                }
+                else {
+                    cardDetails(filteredData);
+                }
             }
         });
     }
-    function buildCard(data) {
-        cardContainer.innerHTML = "";
-        let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
+    function buildCards(cardsToShow) {
         for (let i = 0; i < cardsToShow.length; i++) {
             let card = createElement("div", "myCard", cardContainer);
             createToggle(card);
@@ -66,27 +69,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 handelInfoButton(button, cardText, cardsToShow, i, cardTitle);
             });
         }
-        // let toggles = document.querySelectorAll(".toggle");
-        // handleToggles(toggles);
     }
-    //   function handleToggles(toggles: NodeListOf<Element>) {
-    //     let checkedToggles = 0 ;
-    //     toggles.forEach((toggle) => {
-    //       toggle.addEventListener("click", function () {
-    //         if (checkedToggles < 4) {
-    //           checkedToggles++;
-    //           console.log(checkedToggles)
-    //         } else {
-    //           toggles.forEach((toggle) => {
-    //             toggle.setAttribute("disabled", "true");
-    //           })
-    //         }
-    //         if(toggle.getAttribute("disabled")){
-    // alert("1111")
-    //         }
-    //       });
-    //     });
-    //   }
+    let toggles = document.querySelectorAll(".toggle");
+    function cardDetails(data) {
+        cardContainer.innerHTML = "";
+        let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
+        buildCards(cardsToShow);
+    }
+    function handleToggles(toggles) {
+        let checkedToggles = 0;
+        toggles.forEach(toggle => {
+            toggle.addEventListener("change", function toggleChangeHandler() {
+                if (toggle.checked) {
+                    checkedToggles++;
+                    console.log(checkedToggles);
+                }
+                else {
+                    checkedToggles--;
+                    console.log(checkedToggles);
+                }
+                if (checkedToggles >= 4) {
+                    toggles.forEach(toggle => {
+                        if (!toggle.checked) {
+                            toggle.setAttribute("disabled", "true");
+                        }
+                    });
+                }
+                else {
+                    toggles.forEach(toggle => {
+                        toggle.removeAttribute("disabled");
+                    });
+                }
+            });
+        });
+        // Log toggles here
+        console.log(toggles);
+    }
+    handleToggles(toggles);
     function createToggle(card) {
         let toggle = createElement("label", "switch", card);
         let input = createElement("input", "toggle", toggle);
@@ -111,22 +130,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function saveLocalStorage(key) {
         return __awaiter(this, void 0, void 0, function* () {
             let data;
-            if (!localStorage[key]) {
-                data = yield fetchData(key);
-                localStorage.setItem("TTL", JSON.stringify(new Date().getTime()));
-                localStorage.setItem(key, JSON.stringify(data));
+            let storedTTL = new Date(localStorage.getItem(`TTL ${key}`));
+            let currentDate = new Date().getTime();
+            if ((currentDate - storedTTL.getTime()) < 2 * 60 * 1000) {
+                data = JSON.parse(localStorage.getItem(key));
             }
             else {
-                let storedTTL = new Date(localStorage.getItem("TTL"));
-                let currentDate = new Date().getTime();
-                if (currentDate - storedTTL.getTime() > 24 * 60 * 60 * 1000) {
-                    data = yield fetchData(key);
-                    localStorage.setItem("TTL", new Date().getTime().toString());
-                    localStorage.setItem(key, JSON.stringify(data));
-                }
-                else {
-                    data = JSON.parse(localStorage.getItem(key));
-                }
+                data = yield fetchData(key);
+                localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date()));
+                localStorage.setItem(key, JSON.stringify(data));
             }
             return data;
         });

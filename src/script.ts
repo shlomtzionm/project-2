@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
    let spinnerElement:HTMLElement = spinner(homePage)
     let data = (await saveLocalStorage("list")) as Coin[];
     spinnerElement.style.display ="none"
-    buildCard(data);
+    cardDetails(data);
   })();
 
   let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
@@ -45,61 +45,78 @@ document.addEventListener("DOMContentLoaded", function () {
   searchButton.addEventListener("click", handleSearch);
 
   async function handleSearch() {
-    let inputValue = (
-      document.querySelector(".input") as HTMLInputElement
-    ).value.toLocaleLowerCase();
+    let inputValue = (document.querySelector(".input") as HTMLInputElement ).value.trim().toLocaleLowerCase();
     let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
     if (inputValue === "all") {
-      buildCard(dataFromLS);
+      cardDetails(dataFromLS);
     } else {
-      let filteredData = dataFromLS.filter(
-        (coin) => coin.symbol.toLowerCase() === inputValue
-      );
-      
-      buildCard(filteredData);
+      let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
+        if(filteredData.length === 0){alert("we didnt fined that, try again!")} else{cardDetails(filteredData);}
+        
     }
   }
 
-  function buildCard(data: Coin[]) {
+
+function buildCards(cardsToShow:Coin[]){
+  for (let i = 0; i < cardsToShow.length; i++) {
+    let card = createElement("div", "myCard", cardContainer) as HTMLElement;
+    createToggle(card);
+
+    let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
+    let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
+    let button = createElement("button", "btn", card) as HTMLButtonElement;
+    button.setAttribute("isFalse", "false");
+
+    handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
+    button.addEventListener("click", (event) =>
+      {
+        handelInfoButton(button, cardText, cardsToShow, i, cardTitle)}
+    );
+  }
+}
+
+let toggles = document.querySelectorAll(".toggle");
+
+  function cardDetails(data: Coin[]) {
     cardContainer.innerHTML = "";
     let cardsToShow = data.length > 100 ? data.slice(0, 10) : data;
-    for (let i = 0; i < cardsToShow.length; i++) {
-      let card = createElement("div", "myCard", cardContainer) as HTMLElement;
-      createToggle(card);
-
-      let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
-      let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
-      let button = createElement("button", "btn", card) as HTMLButtonElement;
-      button.setAttribute("isFalse", "false");
-
-      handelCardInfo(cardTitle, cardText, button, cardsToShow, i);
-      button.addEventListener("click", (event) =>
-        {
-          handelInfoButton(button, cardText, cardsToShow, i, cardTitle)}
-      );
-    }
-    // let toggles = document.querySelectorAll(".toggle");
-    // handleToggles(toggles);
+  buildCards(cardsToShow)
+ 
   }
-//   function handleToggles(toggles: NodeListOf<Element>) {
-//     let checkedToggles = 0 ;
 
-//     toggles.forEach((toggle) => {
-//       toggle.addEventListener("click", function () {
-//         if (checkedToggles < 4) {
-//           checkedToggles++;
-//           console.log(checkedToggles)
-//         } else {
-//           toggles.forEach((toggle) => {
-//             toggle.setAttribute("disabled", "true");
-//           })
-//         }
-//         if(toggle.getAttribute("disabled")){
-// alert("1111")
-//         }
-//       });
-//     });
-//   }
+function handleToggles(toggles: NodeListOf<Element>) {
+  let checkedToggles = 0;
+
+  toggles.forEach(toggle => {
+    toggle.addEventListener("change", function toggleChangeHandler() {
+      if ((toggle as HTMLInputElement).checked) {
+        checkedToggles++;
+        console.log(checkedToggles);
+      } else {
+        checkedToggles--;
+        console.log(checkedToggles);
+      }
+
+      if (checkedToggles >= 4) {
+        toggles.forEach(toggle => {
+          if (!(toggle as HTMLInputElement).checked) {
+            toggle.setAttribute("disabled", "true");
+          }
+        });
+      } else {
+        toggles.forEach(toggle => {
+          toggle.removeAttribute("disabled");
+        });
+      }
+    });
+  });
+
+  // Log toggles here
+  console.log(toggles);
+}
+handleToggles(toggles)
+
+
 
   function createToggle(card: HTMLElement) {
     let toggle = createElement("label", "switch", card) as HTMLInputElement;
@@ -131,14 +148,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
     let data: Coin[] | CoinID;
-    let storedTTL :Date= localStorage.getItem("TTL");
+    let storedTTL = new Date(localStorage.getItem(`TTL ${key}`) as string);
     let currentDate = new Date().getTime();
-    if ( (currentDate - storedTTL.getTime()) > 24 * 60 * 60 * 1000) {
-        data = await fetchData(key);
-        localStorage.setItem("TTL", JSON.stringify(new Date().getTime()));
-        localStorage.setItem(key, JSON.stringify(data));
+    if ((currentDate - storedTTL.getTime()) < 2 * 60 * 1000) { 
+              data = JSON.parse(localStorage.getItem(key) as string); 
     } else {
-        data = JSON.parse(localStorage.getItem(key) as string);
+        data = await fetchData(key); 
+        localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date())); 
+        localStorage.setItem(key, JSON.stringify(data)); 
     }
     return data;
 }
