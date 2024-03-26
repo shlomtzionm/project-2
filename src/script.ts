@@ -12,6 +12,8 @@ class Coin {
   }
 }
 
+
+
 class CoinID {
   image: { small: string };
   market_data: { current_price: { usd: number; eur: number; ils: number } };
