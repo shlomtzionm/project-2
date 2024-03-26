@@ -36,22 +36,31 @@ async function init() :Promise<Coin[]>{
   if (isDataEmpty(dataFromLS) || isDataOld()) {
     const newData = await fetchData();
     saveDataLocalStorage(newData);
+    debugger
     return newData
   }else{
-    debugger
      return dataFromLS}
 };
 
 async function handleCards() {
   let data = await init();
   cardContainer.innerHTML = "";
-  let cardsElements = buildCardsElements(numberOfCardsOnPage(data)); // Assuming buildCardsElements takes data directly
+  let cardsElements = buildCardsElements(numberOfCardsOnPage(data)); 
   for (let i = 0; i < cardsElements.length; i++) {
     handelCardInfo(cardsElements[i], data, i);
   }
-}
 
-function handelCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, data:Coin[], i:number) {
+  let buttonArray = document.querySelectorAll(".myCard .btn")
+console.log(buttonArray)
+   
+buttonArray.forEach(button => {
+      button.addEventListener("click", (event) => {
+        handelInfoButton(cardsElements[i],data, i)});
+  
+});}
+
+function handelCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
+  data:Coin[], i:number) {
   cardElements.cardTitle.innerText = data[i].symbol;
   cardElements.cardText.innerText = data[i].name;
   cardElements.button.innerText = "more info";
@@ -124,8 +133,8 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
     button.setAttribute("isFalse", "false");
     let toggle = createToggle(card)
     cardElements.push({ card, cardTitle, cardText,toggle,button });
-    
-  }
+ 
+ }
   return cardElements;
 }
 
@@ -172,11 +181,8 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
 
 
 
-// createToggle(card);
+
 //     handelCardInfo(cardTitle, cardText, button, numberOfCardsOnPage, i);
-//       button.addEventListener("click", (event) => {
-//         handelInfoButton(button, cardText, numberOfCardsOnPage, i, cardTitle);
-//       });
 
   
   
@@ -228,53 +234,54 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
     return toggle
   }
 
-  // function handelInfoButton(
-  //   button: HTMLButtonElement,
-  //   cardText: HTMLElement,
-  //   data: Coin[],
-  //   i: number,
-  //   cardTitle: HTMLElement
-  // ) {
-  //   spinner(cardText);
-  //   debugger;
-  //   if (button.getAttribute("isFalse") === "false") {
-  //     cardText.innerHTML = "";
-  //     moreInfo(data, i, cardText);
-  //     button.setAttribute("isFalse", "true");
-  //   } else {
-  //     handelCardInfo(cardTitle, cardText, button, data, i);
-  //     cardText.innerHTML = data[i].id;
-  //     button.setAttribute("isFalse", "false");
-  //   }
-  // }
+  function handelInfoButton(
+    cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
+    data:Coin[], i:number
+  ) {
+    // spinner(cardText);
+    if (cardElements.button.getAttribute("isFalse") === "false") {
+      cardElements.cardText.innerHTML = "";
+      moreInfo(data, i, cardElements.cardText);
+      cardElements.button.setAttribute("isFalse", "true");
+    } else {
+      handelCardInfo(cardElements, data, i);
+      cardElements.cardText.innerHTML = data[i].id;
+      cardElements.button.setAttribute("isFalse", "false");
+    }
+  }
 
- 
+  async function fetchDataCoinId(x:string): Promise<CoinID> {
+    let res = await fetch(`https://api.coingecko.com/api/v3/coins/${x}`);
+    let data = await res.json();
+    return data;
+  }
 
-//   async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
-//     let coinData = (await saveLocalStorage(data[i].id)) as CoinID;
-//     let img = createElement("img", "img", cardText) as HTMLImageElement;
-//     img.src = coinData.image.small;
-//     let ils = currentPrice(coinData, cardText, "ils");
-//     ils.innerText += " ₪";
-//     let eur = currentPrice(coinData, cardText, "eur");
-//     eur.innerText += "  €";
-//     let usd = currentPrice(coinData, cardText, "usd");
-//     usd.innerText += " $";
-//   }
+  async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
+    let coinData = (await fetchDataCoinId(data[i].id)) as CoinID;
+    debugger
+    let img = createElement("img", "img", cardText) as HTMLImageElement;
+    img.src = coinData.image.small;
+    let ils = currentPrice(coinData, cardText, "ils");
+    ils.innerText += " ₪";
+    let eur = currentPrice(coinData, cardText, "eur");
+    eur.innerText += "  €";
+    let usd = currentPrice(coinData, cardText, "usd");
+    usd.innerText += " $";
+  }
 
   
 
-//   function currentPrice(
-//     coinData: CoinID,
-//     cardText: HTMLElement,
-//     country: string
-//   ): HTMLElement {
-//     let div = createElement("div", country, cardText);
-//     let currency = coinData.market_data.current_price;
-//     let price = currency[country as keyof typeof currency];
-//     div.innerText = price ? price.toString() : "Price not available";
-//     return div;
-//   }
+  function currentPrice(
+    coinData: CoinID,
+    cardText: HTMLElement,
+    country: string
+  ): HTMLElement {
+    let div = createElement("div", country, cardText);
+    let currency = coinData.market_data.current_price;
+    let price = currency[country as keyof typeof currency];
+    div.innerText = price ? price.toString() : "Price not available";
+    return div;
+  }
 
 //   function changePageContent() {
 //     btnArray.forEach((btn) => {

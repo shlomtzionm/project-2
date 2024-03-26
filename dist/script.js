@@ -29,10 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
             if (isDataEmpty(dataFromLS) || isDataOld()) {
                 const newData = yield fetchData();
                 saveDataLocalStorage(newData);
+                debugger;
                 return newData;
             }
             else {
-                debugger;
                 return dataFromLS;
             }
         });
@@ -42,10 +42,12 @@ document.addEventListener("DOMContentLoaded", function () {
         return __awaiter(this, void 0, void 0, function* () {
             let data = yield init();
             cardContainer.innerHTML = "";
-            let cardsElements = buildCardsElements(numberOfCardsOnPage(data)); // Assuming buildCardsElements takes data directly
+            let cardsElements = buildCardsElements(numberOfCardsOnPage(data));
             for (let i = 0; i < cardsElements.length; i++) {
                 handelCardInfo(cardsElements[i], data, i);
             }
+            let buttonArray = document.querySelectorAll(".myCard .btn");
+            console.log(buttonArray);
         });
     }
     function handelCardInfo(cardElements, data, i) {
@@ -105,6 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
             button.setAttribute("isFalse", "false");
             let toggle = createToggle(card);
             cardElements.push({ card, cardTitle, cardText, toggle, button });
+            // button.addEventListener("click", (event) => {
+            // handelInfoButton(cardElements[i],data, i)});
         }
         return cardElements;
     }
@@ -139,11 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     //       }
     //     }
     //   }
-    // createToggle(card);
     //     handelCardInfo(cardTitle, cardText, button, numberOfCardsOnPage, i);
-    //       button.addEventListener("click", (event) => {
-    //         handelInfoButton(button, cardText, numberOfCardsOnPage, i, cardTitle);
-    //       });
     //   // const toggles = document.querySelectorAll('input[type="checkbox"]');
     //   // handleToggles(toggles);
     //   function handleToggles(toggles: NodeListOf<Element>) {
@@ -185,47 +185,46 @@ document.addEventListener("DOMContentLoaded", function () {
         span.classList.add("round");
         return toggle;
     }
-    // function handelInfoButton(
-    //   button: HTMLButtonElement,
-    //   cardText: HTMLElement,
-    //   data: Coin[],
-    //   i: number,
-    //   cardTitle: HTMLElement
-    // ) {
-    //   spinner(cardText);
-    //   debugger;
-    //   if (button.getAttribute("isFalse") === "false") {
-    //     cardText.innerHTML = "";
-    //     moreInfo(data, i, cardText);
-    //     button.setAttribute("isFalse", "true");
-    //   } else {
-    //     handelCardInfo(cardTitle, cardText, button, data, i);
-    //     cardText.innerHTML = data[i].id;
-    //     button.setAttribute("isFalse", "false");
-    //   }
-    // }
-    //   async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
-    //     let coinData = (await saveLocalStorage(data[i].id)) as CoinID;
-    //     let img = createElement("img", "img", cardText) as HTMLImageElement;
-    //     img.src = coinData.image.small;
-    //     let ils = currentPrice(coinData, cardText, "ils");
-    //     ils.innerText += " ₪";
-    //     let eur = currentPrice(coinData, cardText, "eur");
-    //     eur.innerText += "  €";
-    //     let usd = currentPrice(coinData, cardText, "usd");
-    //     usd.innerText += " $";
-    //   }
-    //   function currentPrice(
-    //     coinData: CoinID,
-    //     cardText: HTMLElement,
-    //     country: string
-    //   ): HTMLElement {
-    //     let div = createElement("div", country, cardText);
-    //     let currency = coinData.market_data.current_price;
-    //     let price = currency[country as keyof typeof currency];
-    //     div.innerText = price ? price.toString() : "Price not available";
-    //     return div;
-    //   }
+    function handelInfoButton(cardElements, data, i) {
+        // spinner(cardText);
+        if (cardElements.button.getAttribute("isFalse") === "false") {
+            cardElements.cardText.innerHTML = "";
+            moreInfo(data, i, cardElements.cardText);
+            cardElements.button.setAttribute("isFalse", "true");
+        }
+        else {
+            handelCardInfo(cardElements, data, i);
+            cardElements.cardText.innerHTML = data[i].id;
+            cardElements.button.setAttribute("isFalse", "false");
+        }
+    }
+    function fetchDataCoinId(x) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let res = yield fetch(`https://api.coingecko.com/api/v3/coins/${x}`);
+            let data = yield res.json();
+            return data;
+        });
+    }
+    function moreInfo(data, i, cardText) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let coinData = (yield fetchDataCoinId(data[i].id));
+            let img = createElement("img", "img", cardText);
+            img.src = coinData.image.small;
+            let ils = currentPrice(coinData, cardText, "ils");
+            ils.innerText += " ₪";
+            let eur = currentPrice(coinData, cardText, "eur");
+            eur.innerText += "  €";
+            let usd = currentPrice(coinData, cardText, "usd");
+            usd.innerText += " $";
+        });
+    }
+    function currentPrice(coinData, cardText, country) {
+        let div = createElement("div", country, cardText);
+        let currency = coinData.market_data.current_price;
+        let price = currency[country];
+        div.innerText = price ? price.toString() : "Price not available";
+        return div;
+    }
     //   function changePageContent() {
     //     btnArray.forEach((btn) => {
     //       btn.addEventListener("click", function () {
