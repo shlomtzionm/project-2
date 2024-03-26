@@ -150,40 +150,52 @@ cardDetails(dataFromLS);
 
 
 
-function getData (){
-  let storedTTL = new Date(localStorage.getItem(`TTL list`)).getTime();
-    let currentDate = new Date().getTime();
+  function getData() {
+    const storedTTL = new Date(localStorage['TTL list']).getTime();
+    const currentDate = new Date().getTime();}
+    
+    
+  function checkIfDataOld(storedTTL: number, currentDate: number): boolean {
+    return (currentDate - storedTTL) < (2 * 60 * 1000);
   }
 
-function checkIfDatOld(storedTTL:string , currentDate: number){
-   currentDate - storedTTL.getTime() < 2 * 60 * 1000
-}
-
-
-
-
-  async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
-    let data: Coin[] | CoinID;
+   async function ifDataOld(checkIfDataOld: Function){
+   if (checkIfDataOld()){
+  let  res = await fetch(`https://api.coingecko.com/api/v3/coins/list`);
+let data = await res.json()
+  localStorage.setItem(`TTL list}`, JSON.stringify(new Date()));
+    localStorage.setItem("list", JSON.stringify(data));
+   }
+  }
   
-    if () {
-      data = JSON.parse(localStorage.getItem(key) as string);
-    } else {
-      data = await fetchData(key);
-      localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date()));
-      localStorage.setItem(key, JSON.stringify(data));
-    }
-    return data;
-  }
+  
 
 
 
-  async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
-    let res = await fetch(
-      `https://api.coingecko.com/api/v3/coins/${parameter}`
-    );
-    let data = await res.json();
-    return data;
-  }
+
+  // async function saveLocalStorage(key: string): Promise<Coin[] | CoinID> {
+  //   let data: Coin[] | CoinID;
+  
+  //   if () {
+  //     data = JSON.parse(localStorage.getItem(key) as string);
+  //   } else {
+  //     data = await fetchData(key);
+      
+  //     localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date()));
+  //     localStorage.setItem(key, JSON.stringify(data));
+  //   }
+  //   return data;
+  // }
+
+
+
+  // async function fetchData(parameter: string): Promise<Coin[] | CoinID> {
+  //   let res = await fetch(
+  //     `https://api.coingecko.com/api/v3/coins/${parameter}`
+  //   );
+  //   let data = await res.json();
+  //   return data;
+  // }
 
   function createElement(
     div: string,
