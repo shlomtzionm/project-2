@@ -90,15 +90,18 @@ body {
 }
 
 .myCard {
+
     background-color: #41a94170;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
     margin-bottom: 20px;
     width: 210px;
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     white-space: normal;
     margin-left: 1px;
+    justify-content: space-between
 }
 
 .MY-card-title {
@@ -219,6 +222,10 @@ input:checked + .slider:before {
 .spinner-border{
     display: block;
     margin: auto;
+}
+
+.spinner-border{
+    display: none;
 }
 
 /* Media Queries */

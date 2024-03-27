@@ -47,19 +47,27 @@ async function handleCards() {
   cardContainer.innerHTML = "";
   let cardsElements = buildCardsElements(numberOfCardsOnPage(data)); 
   for (let i = 0; i < cardsElements.length; i++) {
-    handelCardInfo(cardsElements[i], data, i);
-  }
+    getCardInfo(cardsElements[i], data, i);
+    cardsElements[i].button.addEventListener("click",() => {
+   showSpinner(cardsElements[i].spinner)
+      getMoreCardInfo(cardsElements[i], data, i)
+      disableSpiner(cardsElements[i].spinner)
+    })  
+}
 
-  let buttonArray = document.querySelectorAll(".myCard .btn")
-console.log(buttonArray)
-   
-buttonArray.forEach(button => {
-      button.addEventListener("click", (event) => {
-        handelInfoButton(cardsElements[i],data, i)});
-  
-});}
+ 
 
-function handelCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
+}
+handleCards()
+
+function disableSpiner(spinner:HTMLElement){
+spinner.style.display = "none"
+}
+function showSpinner(spinner:HTMLElement){
+  spinner.style.display = "block"
+}
+
+function getCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
   data:Coin[], i:number) {
   cardElements.cardTitle.innerText = data[i].symbol;
   cardElements.cardText.innerText = data[i].name;
@@ -67,7 +75,21 @@ function handelCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement
   cardElements.toggle.checked = data[i].isChecked;
 }
 
-handleCards()
+function getMoreCardInfo(
+  cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
+  data:Coin[], i:number
+) {
+ 
+  if (cardElements.button.getAttribute("isFalse") === "false") {
+    cardElements.cardText.innerHTML = "";
+    moreInfo(data, i, cardElements.cardText);
+    cardElements.button.setAttribute("isFalse", "true");
+  } else {
+    getCardInfo(cardElements, data, i);
+    cardElements.cardText.innerHTML = data[i].id;
+    cardElements.button.setAttribute("isFalse", "false");
+  }
+}
 
 function numberOfCardsOnPage(data:Coin[]):Coin[]{
 return  data.length > 100 ? data.slice(0, 10) : data;
@@ -121,68 +143,74 @@ function createElement(
   appendTo.appendChild(element);
   return element;
 }
+function createSpinner(appendTo: HTMLElement): HTMLElement {
+  let border = createElement("div", "spinner-border", appendTo);
+  border.setAttribute("role", "status");
+  createElement("span", "sr-only", border);
+  return border;
+}
 
-function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }[] {
-  const cardElements: { button:HTMLElement,card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement }[] = [];
+function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement,spinner:HTMLElement }[] {
+  const cardElements: { button:HTMLElement,card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,spinner:HTMLElement }[] = [];
 
   for (let i = 0; i < numberOfCardsOnPage.length; i++) {
     let card = createElement("div", "myCard", cardContainer) as HTMLElement;
+    let toggle = createToggle(card)
     let cardTitle = createElement("h5", "MY-card-title", card) as HTMLElement;
     let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
     let button = createElement("button", "btn", card) as HTMLButtonElement;
     button.setAttribute("isFalse", "false");
-    let toggle = createToggle(card)
-    cardElements.push({ card, cardTitle, cardText,toggle,button });
+   
+    let spinner = createSpinner(card)
+    cardElements.push({ card, cardTitle, cardText,toggle,button,spinner});
  
  }
   return cardElements;
 }
 
 
-//   let homePage = document.querySelector("#home") as HTMLElement;
-//   let aboutPage = document.querySelector("#about") as HTMLElement;
-//   let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
-//   let input = document.querySelector(".input") as HTMLInputElement;
-//   let btnArray = document.querySelectorAll(".navButton");
+  let homePage = document.querySelector("#home") as HTMLElement;
+  let aboutPage = document.querySelector("#about") as HTMLElement;
+  let liveReportsPage = document.querySelector("#liveReports") as HTMLElement;
+  let input = document.querySelector(".input") as HTMLInputElement;
+  let btnArray = document.querySelectorAll(".navButton");
 
-
-
-// let spinnerElement: HTMLElement = spinner(homePage);
-// spinnerElement.style.display = "none";
-
-
- 
-  // let searchButton = document.querySelector(
-  //   ".search-button"
-  // ) as HTMLButtonElement;
-
-//   searchButton.addEventListener("click", handleSearch);
-
-//   async function handleSearch() {
-//     let inputValue = (
-//       document.querySelector(".input") as HTMLInputElement
-//     ).value
-//       .trim()
-//       .toLocaleLowerCase();
-//     let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
-//     if (inputValue === "all") {
-//       cardDetails(dataFromLS);
-//     } else {
-//       let filteredData = dataFromLS.filter(
-//         (coin) => coin.symbol.toLowerCase() === inputValue
-//       );
-//       if (filteredData.length === 0) {
-//         alert("we didnt fined that, try again!");
-//       } else {
-//         cardDetails(filteredData);
-//       }
-//     }
-//   }
 
 
 
 
-//     handelCardInfo(cardTitle, cardText, button, numberOfCardsOnPage, i);
+ 
+  let searchButton = document.querySelector(
+    ".search-button"
+  ) as HTMLButtonElement;
+
+  searchButton.addEventListener("click", handleSearch);
+
+  async function handleSearch() {
+    let inputValue = (
+      document.querySelector(".input") as HTMLInputElement
+    ).value
+      .trim()
+      .toLocaleLowerCase();
+    let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
+    if (inputValue === "all") {
+     handleCards()
+    } else {
+      let filteredData = dataFromLS.filter(
+        (coin) => coin.symbol.toLowerCase() === inputValue
+      );
+      if (filteredData.length === 0) {
+        alert("we didnt fined that, try again!");
+      } else {
+        // cardDetails(filteredData);
+      }
+    }
+  }
+
+
+
+
+
 
   
   
@@ -234,31 +262,16 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
     return toggle
   }
 
-  function handelInfoButton(
-    cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
-    data:Coin[], i:number
-  ) {
-    // spinner(cardText);
-    if (cardElements.button.getAttribute("isFalse") === "false") {
-      cardElements.cardText.innerHTML = "";
-      moreInfo(data, i, cardElements.cardText);
-      cardElements.button.setAttribute("isFalse", "true");
-    } else {
-      handelCardInfo(cardElements, data, i);
-      cardElements.cardText.innerHTML = data[i].id;
-      cardElements.button.setAttribute("isFalse", "false");
-    }
-  }
 
-  async function fetchDataCoinId(x:string): Promise<CoinID> {
-    let res = await fetch(`https://api.coingecko.com/api/v3/coins/${x}`);
+
+  async function fetchDataCoinId(coinID:string): Promise<CoinID> {
+    let res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinID}`);
     let data = await res.json();
     return data;
   }
 
   async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
     let coinData = (await fetchDataCoinId(data[i].id)) as CoinID;
-    debugger
     let img = createElement("img", "img", cardText) as HTMLImageElement;
     img.src = coinData.image.small;
     let ils = currentPrice(coinData, cardText, "ils");
@@ -283,40 +296,35 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
     return div;
   }
 
-//   function changePageContent() {
-//     btnArray.forEach((btn) => {
-//       btn.addEventListener("click", function () {
-//         switch (btn.innerHTML) {
-//           case "Home":
-//             input.disabled = false;
-//             homePage.style.display = "block";
-//             aboutPage.style.display = "none";
-//             liveReportsPage.style.display = "none";
-//             break;
-//           case "About":
-//             input.disabled = true;
-//             homePage.style.display = "none";
-//             aboutPage.style.display = "block";
-//             liveReportsPage.style.display = "none";
-//             break;
-//           case "Live Reports":
-//             input.disabled = true;
-//             homePage.style.display = "none";
-//             aboutPage.style.display = "none";
-//             liveReportsPage.style.display = "block";
-//             break;
-//         }
-//       });
-//     });
-//   }
-//   changePageContent();
+  function changePageContent() {
+    btnArray.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        switch (btn.innerHTML) {
+          case "Home":
+            input.disabled = false;
+            homePage.style.display = "block";
+            aboutPage.style.display = "none";
+            liveReportsPage.style.display = "none";
+            break;
+          case "About":
+            input.disabled = true;
+            homePage.style.display = "none";
+            aboutPage.style.display = "block";
+            liveReportsPage.style.display = "none";
+            break;
+          case "Live Reports":
+            input.disabled = true;
+            homePage.style.display = "none";
+            aboutPage.style.display = "none";
+            liveReportsPage.style.display = "block";
+            break;
+        }
+      });
+    });
+  }
+  changePageContent();
 
-//   function spinner(appendTo: HTMLElement): HTMLElement {
-//     let border = createElement("div", "spinner-border", appendTo);
-//     border.setAttribute("role", "status");
-//     createElement("span", "sr-only", border);
-//     return border;
-//   }
+
 });
 
 // function alertToggles() {
