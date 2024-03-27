@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+// document.addEventListener("DOMContentLoaded", function () {
 class Coin {
   id: string;
   symbol: string;
@@ -17,14 +17,10 @@ class Coin {
 class CoinID {
   image: { small: string };
   market_data: { current_price: { usd: number; eur: number; ils: number } };
-
-
   constructor(
     image: { small: string },
     market_data: { current_price: { usd: number; eur: number; ils: number } },
-   
   ) {
-    
     this.image = image;
     this.market_data = market_data;
   }
@@ -33,10 +29,9 @@ class CoinID {
 
 async function init() :Promise<Coin[]>{
   const dataFromLS = getDataFromLS();
-  if (isDataEmpty(dataFromLS) || isDataOld()) {
+  if (isDataEmpty(dataFromLS) || isDataOld("TTL_LIST")) {
     const newData = await fetchData();
-    saveDataLocalStorage(newData);
-    debugger
+    saveAllDataLocalStorage(newData);
     return newData
   }else{
      return dataFromLS}
@@ -46,21 +41,23 @@ async function handleCards() {
   let data = await init();
   cardContainer.innerHTML = "";
   let cardsElements = buildCardsElements(numberOfCardsOnPage(data)); 
+
   for (let i = 0; i < cardsElements.length; i++) {
-    getCardInfo(cardsElements[i], data, i);
+    getCardInfo(cardsElements[i], data, i)
+
     cardsElements[i].button.addEventListener("click",() => {
    showSpinner(cardsElements[i].spinner)
-      getMoreCardInfo(cardsElements[i], data, i)
-      disableSpiner(cardsElements[i].spinner)
+     getMoreInfoButton(cardsElements[i], data, i)
+      disableSpinner(cardsElements[i].spinner)
+    
     })  
 }
-
- 
-
 }
 handleCards()
 
-function disableSpiner(spinner:HTMLElement){
+
+
+function disableSpinner(spinner:HTMLElement){
 spinner.style.display = "none"
 }
 function showSpinner(spinner:HTMLElement){
@@ -73,23 +70,22 @@ function getCardInfo(cardElements:{ card: HTMLElement, cardTitle: HTMLElement, c
   cardElements.cardText.innerText = data[i].name;
   cardElements.button.innerText = "more info";
   cardElements.toggle.checked = data[i].isChecked;
+
 }
 
-function getMoreCardInfo(
-  cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement }, 
-  data:Coin[], i:number
-) {
- 
+async function getMoreInfoButton( cardElements:{ card: HTMLElement, cardTitle: HTMLElement, cardText: HTMLElement,toggle: HTMLInputElement,button:HTMLElement },  data:Coin[], i:number) {
   if (cardElements.button.getAttribute("isFalse") === "false") {
     cardElements.cardText.innerHTML = "";
-    moreInfo(data, i, cardElements.cardText);
-    cardElements.button.setAttribute("isFalse", "true");
+  let coinData = await getMoreInfo(data[i],  cardElements.cardText);
+    moreInfoDate(cardElements.cardText, coinData);
+cardElements.button.setAttribute("isFalse", "true");
   } else {
     getCardInfo(cardElements, data, i);
     cardElements.cardText.innerHTML = data[i].id;
     cardElements.button.setAttribute("isFalse", "false");
   }
 }
+
 
 function numberOfCardsOnPage(data:Coin[]):Coin[]{
 return  data.length > 100 ? data.slice(0, 10) : data;
@@ -100,13 +96,12 @@ let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
 
 
 
-function isDataOld(): boolean {
-  const storedTTL = localStorage["TTL list"];
+function isDataOld(item:string): boolean {
+  const storedTTL = localStorage.getItem(`${item}`); 
   if (!storedTTL) {
-    return false;
+    return false; 
   }
-  const storedTTLDate = JSON.parse(storedTTL);
-  return new Date().getTime() - new Date(storedTTLDate).getTime() > 2 * 60 * 1000;
+  return new Date().getTime() - parseInt(storedTTL) > 2 * 60 * 1000; 
 }
 
 
@@ -116,9 +111,9 @@ async function fetchData(): Promise<Coin[]> {
   return data;
 }
 
-function saveDataLocalStorage(data: Coin[]) {
+function saveAllDataLocalStorage(data: Coin[]) {
   localStorage.setItem("list", JSON.stringify(data));
-  localStorage.setItem("TTL_LIST", JSON.stringify(new Date()));
+  localStorage.setItem("TTL_LIST", JSON.stringify(new Date().getTime()));
 }
 
 function getDataFromLS(): Coin[] {
@@ -129,7 +124,7 @@ function getDataFromLS(): Coin[] {
   }
 }
 
-function isDataEmpty(data: Coin[]): boolean {
+function isDataEmpty(data: []): boolean {
   return data.length === 0;
 }
 
@@ -143,6 +138,7 @@ function createElement(
   appendTo.appendChild(element);
   return element;
 }
+
 function createSpinner(appendTo: HTMLElement): HTMLElement {
   let border = createElement("div", "spinner-border", appendTo);
   border.setAttribute("role", "status");
@@ -180,32 +176,32 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
 
 
  
-  let searchButton = document.querySelector(
-    ".search-button"
-  ) as HTMLButtonElement;
+  // let searchButton = document.querySelector(
+  //   ".search-button"
+  // ) as HTMLButtonElement;
 
-  searchButton.addEventListener("click", handleSearch);
+  // searchButton.addEventListener("click", handleSearch);
 
-  async function handleSearch() {
-    let inputValue = (
-      document.querySelector(".input") as HTMLInputElement
-    ).value
-      .trim()
-      .toLocaleLowerCase();
-    let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
-    if (inputValue === "all") {
-     handleCards()
-    } else {
-      let filteredData = dataFromLS.filter(
-        (coin) => coin.symbol.toLowerCase() === inputValue
-      );
-      if (filteredData.length === 0) {
-        alert("we didnt fined that, try again!");
-      } else {
-        // cardDetails(filteredData);
-      }
-    }
-  }
+  // async function handleSearch() {
+  //   let inputValue = (
+  //     document.querySelector(".input") as HTMLInputElement
+  //   ).value
+  //     .trim()
+  //     .toLocaleLowerCase();
+  //   let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
+  //   if (inputValue === "all") {
+  //    handleCards()
+  //   } else {
+  //     let filteredData = dataFromLS.filter(
+  //       (coin) => coin.symbol.toLowerCase() === inputValue
+  //     );
+  //     if (filteredData.length === 0) {
+  //       alert("we didnt fined that, try again!");
+  //     } else {
+  //       // cardDetails(filteredData);
+  //     }
+  //   }
+  // }
 
 
 
@@ -270,31 +266,45 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
     return data;
   }
 
-  async function moreInfo(data: Coin[], i: number, cardText: HTMLElement) {
-    let coinData = (await fetchDataCoinId(data[i].id)) as CoinID;
-    let img = createElement("img", "img", cardText) as HTMLImageElement;
-    img.src = coinData.image.small;
-    let ils = currentPrice(coinData, cardText, "ils");
-    ils.innerText += " ₪";
-    let eur = currentPrice(coinData, cardText, "eur");
-    eur.innerText += "  €";
-    let usd = currentPrice(coinData, cardText, "usd");
-    usd.innerText += " $";
-  }
-
   
 
-  function currentPrice(
-    coinData: CoinID,
-    cardText: HTMLElement,
-    country: string
-  ): HTMLElement {
-    let div = createElement("div", country, cardText);
-    let currency = coinData.market_data.current_price;
-    let price = currency[country as keyof typeof currency];
-    div.innerText = price ? price.toString() : "Price not available";
-    return div;
+async function getMoreInfo(data:Coin,cardText: HTMLElement) :Promise<CoinID>{
+  const coinData = getCoinFromLS(data.id);
+  if (isDataEmpty(coinData) || isDataOld(`TTL ${data.id}`)) {
+    const newData = await fetchDataCoinId(data.id);
+    saveCardDataLocalStorage(coinData, data.id);
+    return newData
+  }else{
+     return coinData}
+     
+};
+
+
+function getCoinFromLS(key:string):CoinID[]{
+  if (localStorage[`${key}`]) {
+    return JSON.parse(localStorage[`${key}`]);
+  } else {
+    return []
   }
+}
+
+
+function moreInfoDate(cardText:HTMLElement,coinData:CoinID){
+  let img = createElement("img", "img", cardText) as HTMLImageElement;
+  img.src = coinData.image.small;
+      let ils = createElement("div","ils",cardText )
+      ils.innerText = `${coinData.market_data.current_price.ils} ₪`
+let usd =createElement("div","usd",cardText )
+usd.innerText = `${coinData.market_data.current_price.usd} $`
+  let eur =createElement("div","eur",cardText )
+ eur.innerText= `${coinData.market_data.current_price.eur} €`
+}
+
+function saveCardDataLocalStorage(data: CoinID, key:string) {
+  localStorage.setItem(key, JSON.stringify(data));
+  localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date().getTime()));
+}
+
 
   function changePageContent() {
     btnArray.forEach((btn) => {
@@ -325,7 +335,7 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): { card: HTMLElement, c
   changePageContent();
 
 
-});
+// });
 
 // function alertToggles() {
 //   alert("you must choose up to five coins!");
