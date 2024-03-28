@@ -23,12 +23,12 @@ class CoinID {
         this.market_data = market_data;
     }
 }
-function init() {
+function getInformation(key) {
     return __awaiter(this, void 0, void 0, function* () {
-        const dataFromLS = getDataFromLS();
-        if (isDataEmpty(dataFromLS) || isDataOld("TTL_LIST")) {
-            const newData = yield fetchData();
-            saveAllDataLocalStorage(newData);
+        const dataFromLS = getDataFromLS(key);
+        if (isDataEmpty(dataFromLS) || isDataOld(`TTL ${key}`)) {
+            const newData = yield fetchData(key);
+            saveCardDataLocalStorage(newData, key);
             return newData;
         }
         else {
@@ -36,23 +36,43 @@ function init() {
         }
     });
 }
-;
-function handleCards() {
+function saveCardDataLocalStorage(data, key) {
+    localStorage.setItem(key, JSON.stringify(data));
+    localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date().getTime()));
+}
+function isDataOld(item) {
+    const storedTTL = localStorage.getItem(`TTL ${item}`);
+    if (!storedTTL) {
+        return false;
+    }
+    return new Date().getTime() - parseInt(storedTTL) > 2 * 60 * 1000;
+}
+function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        let data = yield init();
-        cardContainer.innerHTML = "";
-        let cardsElements = buildCardsElements(numberOfCardsOnPage(data));
-        for (let i = 0; i < cardsElements.length; i++) {
-            getCardInfo(cardsElements[i], data, i);
-            cardsElements[i].button.addEventListener("click", () => {
-                showSpinner(cardsElements[i].spinner);
-                getMoreInfoButton(cardsElements[i], data, i);
-                disableSpinner(cardsElements[i].spinner);
-            });
-        }
+        let data = yield getInformation("list");
+        handleCards(data);
     });
 }
-handleCards();
+init();
+function handleCards(data) {
+    cardContainer.innerHTML = "";
+    let cardsElements = buildCardsElements(numberOfCardsOnPage(data));
+    for (let i = 0; i < cardsElements.length; i++) {
+        getCardInfo(cardsElements[i], data, i);
+        handleButtons(cardsElements, data, i);
+        // handleToggles(cardsElements)
+        // cardsElements[i].toggle.addEventListener("change",function(event){
+        //   toggleChangeHandler(event,cardsElements[i].toggle)
+        // })
+    }
+}
+function handleButtons(cardsElements, data, i) {
+    cardsElements[i].button.addEventListener("click", () => {
+        showSpinner(cardsElements[i].spinner);
+        buttonMoreInfo(cardsElements[i], data, i);
+        disableSpinner(cardsElements[i].spinner);
+    });
+}
 function disableSpinner(spinner) {
     spinner.style.display = "none";
 }
@@ -65,11 +85,11 @@ function getCardInfo(cardElements, data, i) {
     cardElements.button.innerText = "more info";
     cardElements.toggle.checked = data[i].isChecked;
 }
-function getMoreInfoButton(cardElements, data, i) {
+function buttonMoreInfo(cardElements, data, i) {
     return __awaiter(this, void 0, void 0, function* () {
         if (cardElements.button.getAttribute("isFalse") === "false") {
             cardElements.cardText.innerHTML = "";
-            let coinData = yield getMoreInfo(data[i], cardElements.cardText);
+            let coinData = yield getInformation(data[i].id);
             moreInfoDate(cardElements.cardText, coinData);
             cardElements.button.setAttribute("isFalse", "true");
         }
@@ -80,38 +100,34 @@ function getMoreInfoButton(cardElements, data, i) {
         }
     });
 }
+function moreInfoDate(cardText, coinData) {
+    let img = createElement("img", "img", cardText);
+    img.src = coinData.image.small;
+    let ils = createElement("div", "ils", cardText);
+    ils.innerText = `${coinData.market_data.current_price.ils} ₪`;
+    let usd = createElement("div", "usd", cardText);
+    usd.innerText = `${coinData.market_data.current_price.usd} $`;
+    let eur = createElement("div", "eur", cardText);
+    eur.innerText = `${coinData.market_data.current_price.eur} €`;
+}
 function numberOfCardsOnPage(data) {
     return data.length > 100 ? data.slice(0, 10) : data;
 }
 let cardContainer = document.querySelector("#cardContainer");
-function isDataOld(item) {
-    const storedTTL = localStorage.getItem(`${item}`);
-    if (!storedTTL) {
-        return false;
-    }
-    return new Date().getTime() - parseInt(storedTTL) > 2 * 60 * 1000;
-}
-function fetchData() {
+function fetchData(key) {
     return __awaiter(this, void 0, void 0, function* () {
-        let res = yield fetch(`https://api.coingecko.com/api/v3/coins/list`);
+        let res = yield fetch(`https://api.coingecko.com/api/v3/coins/${key}`);
         let data = yield res.json();
         return data;
     });
 }
-function saveAllDataLocalStorage(data) {
-    localStorage.setItem("list", JSON.stringify(data));
-    localStorage.setItem("TTL_LIST", JSON.stringify(new Date().getTime()));
-}
-function getDataFromLS() {
-    if (localStorage["list"]) {
-        return JSON.parse(localStorage["list"]);
+function isDataEmpty(data) {
+    if (Array.isArray(data)) {
+        return data.length === 0;
     }
     else {
-        return [];
+        return Object.keys(data).length === 0;
     }
-}
-function isDataEmpty(data) {
-    return data.length === 0;
 }
 function createElement(div, className, appendTo) {
     let element = document.createElement(div);
@@ -144,31 +160,28 @@ let aboutPage = document.querySelector("#about");
 let liveReportsPage = document.querySelector("#liveReports");
 let input = document.querySelector(".input");
 let btnArray = document.querySelectorAll(".navButton");
-// let searchButton = document.querySelector(
-//   ".search-button"
-// ) as HTMLButtonElement;
-// searchButton.addEventListener("click", handleSearch);
-// async function handleSearch() {
-//   let inputValue = (
-//     document.querySelector(".input") as HTMLInputElement
-//   ).value
-//     .trim()
-//     .toLocaleLowerCase();
-//   let dataFromLS = JSON.parse(localStorage["list"]) as Coin[];
-//   if (inputValue === "all") {
-//    handleCards()
-//   } else {
-//     let filteredData = dataFromLS.filter(
-//       (coin) => coin.symbol.toLowerCase() === inputValue
-//     );
-//     if (filteredData.length === 0) {
-//       alert("we didnt fined that, try again!");
-//     } else {
-//       // cardDetails(filteredData);
-//     }
-//   }
-// }
-//   // const toggles = document.querySelectorAll('input[type="checkbox"]');
+let searchButton = document.querySelector(".search-button");
+searchButton.addEventListener("click", handleSearch);
+function handleSearch() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let inputValue = document.querySelector(".input").value.trim().toLocaleLowerCase();
+        let dataFromLS = JSON.parse(localStorage["list"]);
+        if (inputValue === "all") {
+            handleCards(dataFromLS);
+        }
+        else {
+            let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
+            if (filteredData.length === 0) {
+                alert("we didn't fined that, try again!");
+            }
+            else {
+                handleCards(filteredData);
+            }
+        }
+    });
+}
+// const toggles = document.querySelectorAll('input[type="checkbox"]')
+// console.log(toggles);
 //   // handleToggles(toggles);
 //   function handleToggles(toggles: NodeListOf<Element>) {
 //     toggles.forEach((toggle) => {
@@ -181,26 +194,24 @@ let btnArray = document.querySelectorAll(".navButton");
 //       });
 //     });
 //   }
-//   let checkedToggles = 0;
-//   function toggleChangeHandler(event: Event, toggles: NodeListOf<Element>) {
-//     const target = event.target as HTMLInputElement;
-//     if (target.checked) {
-//       checkedToggles++;
-//     } else {
-//       checkedToggles--;
-//     }
-//     if (checkedToggles >= 5) {
-//       toggles.forEach((toggle) => {
-//         if (!(toggle as HTMLInputElement).checked) {
-//           (toggle as HTMLInputElement).setAttribute("disabled", "true");
-//         }
-//       });
-//     } else {
-//       toggles.forEach((toggle) => {
-//         (toggle as HTMLInputElement).removeAttribute("disabled");
-//       });
-//     }
+// let checkedToggles = 0;
+// function toggleChangeHandler(event: Event,toggle:HTMLInputElement) {
+//   const target = event.target as HTMLInputElement;
+//   if (target.checked) {
+//     checkedToggles++;
+//   } else {
+//     checkedToggles--;
 //   }
+//   if (checkedToggles >= 5) {
+//       if (!(toggle as HTMLInputElement).checked) {
+//         (toggle as HTMLInputElement).setAttribute("disabled", "true");
+//   } else {
+//     let toggles = document.querySelectorAll('input[type="checkbox"]');
+//     toggles.forEach((toggle)=>{ (toggle as HTMLInputElement).removeAttribute("disabled")})
+//      ;
+//   }
+// }
+// }
 function createToggle(card) {
     let toggle = createElement("label", "switch", card);
     let input = createElement("input", "toggle", toggle);
@@ -209,48 +220,13 @@ function createToggle(card) {
     span.classList.add("round");
     return toggle;
 }
-function fetchDataCoinId(coinID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let res = yield fetch(`https://api.coingecko.com/api/v3/coins/${coinID}`);
-        let data = yield res.json();
-        return data;
-    });
-}
-function getMoreInfo(data, cardText) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const coinData = getCoinFromLS(data.id);
-        if (isDataEmpty(coinData) || isDataOld(`TTL ${data.id}`)) {
-            const newData = yield fetchDataCoinId(data.id);
-            saveCardDataLocalStorage(coinData, data.id);
-            return newData;
-        }
-        else {
-            return coinData;
-        }
-    });
-}
-;
-function getCoinFromLS(key) {
+function getDataFromLS(key) {
     if (localStorage[`${key}`]) {
         return JSON.parse(localStorage[`${key}`]);
     }
     else {
         return [];
     }
-}
-function moreInfoDate(cardText, coinData) {
-    let img = createElement("img", "img", cardText);
-    img.src = coinData.image.small;
-    let ils = createElement("div", "ils", cardText);
-    ils.innerText = `${coinData.market_data.current_price.ils} ₪`;
-    let usd = createElement("div", "usd", cardText);
-    usd.innerText = `${coinData.market_data.current_price.usd} $`;
-    let eur = createElement("div", "eur", cardText);
-    eur.innerText = `${coinData.market_data.current_price.eur} €`;
-}
-function saveCardDataLocalStorage(data, key) {
-    localStorage.setItem(key, JSON.stringify(data));
-    localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date().getTime()));
 }
 function changePageContent() {
     btnArray.forEach((btn) => {
