@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-// document.addEventListener("DOMContentLoaded", function () {
 class Coin {
     constructor(id, symbol, name, isChecked) {
         this.isChecked = isChecked;
@@ -23,12 +22,29 @@ class CoinID {
         this.market_data = market_data;
     }
 }
+class CardElements {
+    constructor(spinner, card, cardTitle, cardText, toggle, button) {
+        this.button = button;
+        this.spinner = spinner;
+        this.card = card;
+        this.cardText = cardText;
+        this.cardTitle = cardTitle;
+        this.toggle = toggle;
+    }
+}
+function init() {
+    return __awaiter(this, void 0, void 0, function* () {
+        let data = yield getInformation("list");
+        handleCards(data);
+    });
+}
+init();
 function getInformation(key) {
     return __awaiter(this, void 0, void 0, function* () {
         const dataFromLS = getDataFromLS(key);
         if (isDataEmpty(dataFromLS) || isDataOld(`TTL ${key}`)) {
             const newData = yield fetchData(key);
-            saveCardDataLocalStorage(newData, key);
+            saveLocalStorage(newData, key);
             return newData;
         }
         else {
@@ -36,7 +52,7 @@ function getInformation(key) {
         }
     });
 }
-function saveCardDataLocalStorage(data, key) {
+function saveLocalStorage(data, key) {
     localStorage.setItem(key, JSON.stringify(data));
     localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date().getTime()));
 }
@@ -47,30 +63,58 @@ function isDataOld(item) {
     }
     return new Date().getTime() - parseInt(storedTTL) > 2 * 60 * 1000;
 }
-function init() {
-    return __awaiter(this, void 0, void 0, function* () {
-        let data = yield getInformation("list");
-        handleCards(data);
-    });
-}
-init();
+let toggles = {};
 function handleCards(data) {
     cardContainer.innerHTML = "";
-    let cardsElements = buildCardsElements(numberOfCardsOnPage(data));
-    for (let i = 0; i < cardsElements.length; i++) {
-        getCardInfo(cardsElements[i], data, i);
-        handleButtons(cardsElements, data, i);
-        // handleToggles(cardsElements)
-        // cardsElements[i].toggle.addEventListener("change",function(event){
-        //   toggleChangeHandler(event,cardsElements[i].toggle)
-        // })
+    let cardElements = buildCardsElements(numberOfCardsOnPage(data));
+    let togglesA = document.querySelectorAll('input[type="checkbox"]');
+    console.log(togglesA);
+    for (let i = 0; i < cardElements.length; i++) {
+        getCardInfo(cardElements[i], data, i);
+        handleButtons(cardElements, data, i);
+        cardElements[i].toggle.addEventListener("change", function (event) {
+            if (checkedToggles >= 5) {
+                togglesState(togglesA, true);
+            }
+            else {
+                togglesState(togglesA, false);
+            }
+            let eventtarget = event.target;
+            handleToggles(data, i, cardElements, eventtarget);
+            console.log(checkedToggles);
+            for (const key in toggles) {
+                if (toggles[key] === true) {
+                    checkedToggles++;
+                }
+            }
+            console.log(checkedToggles);
+        });
     }
 }
-function handleButtons(cardsElements, data, i) {
-    cardsElements[i].button.addEventListener("click", () => {
-        showSpinner(cardsElements[i].spinner);
-        buttonMoreInfo(cardsElements[i], data, i);
-        disableSpinner(cardsElements[i].spinner);
+let checkedToggles = 0;
+function handleToggles(data, i, cardElements, eventtarget) {
+    if (eventtarget.checked) {
+        debugger;
+        toggles[data[i].id] = true;
+    }
+    else {
+        debugger;
+        toggles[data[i].id] = false;
+    }
+    // console.log(checkedToggles);
+}
+function togglesState(togglesA, state) {
+    togglesA.forEach(toggle => {
+        if (toggle.checked = false) {
+            toggle.disabled = state;
+        }
+    });
+}
+function handleButtons(cardElements, data, i) {
+    cardElements[i].button.addEventListener("click", () => {
+        showSpinner(cardElements[i].spinner);
+        buttonMoreInfo(cardElements[i], data, i);
+        disableSpinner(cardElements[i].spinner);
     });
 }
 function disableSpinner(spinner) {
@@ -87,28 +131,45 @@ function getCardInfo(cardElements, data, i) {
 }
 function buttonMoreInfo(cardElements, data, i) {
     return __awaiter(this, void 0, void 0, function* () {
-        if (cardElements.button.getAttribute("isFalse") === "false") {
-            cardElements.cardText.innerHTML = "";
-            let coinData = yield getInformation(data[i].id);
-            moreInfoDate(cardElements.cardText, coinData);
-            cardElements.button.setAttribute("isFalse", "true");
+        if (isButtonFalse(cardElements)) {
+            yield showCoinInfo(cardElements, data[i]);
         }
         else {
-            getCardInfo(cardElements, data, i);
-            cardElements.cardText.innerHTML = data[i].id;
-            cardElements.button.setAttribute("isFalse", "false");
+            resetCardInfo(cardElements, data, i);
         }
     });
 }
-function moreInfoDate(cardText, coinData) {
+function isButtonFalse(cardElements) {
+    return cardElements.button.getAttribute("isFalse") === "false";
+}
+function showCoinInfo(cardElements, coin) {
+    return __awaiter(this, void 0, void 0, function* () {
+        clearCardText(cardElements);
+        const coinData = yield getInformation(coin.id);
+        displayCoinInfo(cardElements.cardText, coinData);
+        setButtonState(cardElements.button, true);
+    });
+}
+function resetCardInfo(cardElements, coin, i) {
+    getCardInfo(cardElements, coin, i);
+    setButtonState(cardElements.button, false);
+}
+function clearCardText(cardElements) {
+    cardElements.cardText.innerHTML = "";
+}
+function setButtonState(button, state) {
+    button.setAttribute("isFalse", state ? "true" : "false");
+}
+function displayCoinInfo(cardText, coinData) {
     let img = createElement("img", "img", cardText);
     img.src = coinData.image.small;
-    let ils = createElement("div", "ils", cardText);
-    ils.innerText = `${coinData.market_data.current_price.ils} ₪`;
-    let usd = createElement("div", "usd", cardText);
-    usd.innerText = `${coinData.market_data.current_price.usd} $`;
-    let eur = createElement("div", "eur", cardText);
-    eur.innerText = `${coinData.market_data.current_price.eur} €`;
+    curacyInfo("₪", "ils", cardText, coinData);
+    curacyInfo("$", "usd", cardText, coinData);
+    curacyInfo("€", "eur", cardText, coinData);
+}
+function curacyInfo(symbol, country, cardText, coinData) {
+    let div = createElement("div", country, cardText);
+    div.innerHTML = `${coinData.market_data.current_price[country]} ${symbol}`;
 }
 function numberOfCardsOnPage(data) {
     return data.length > 100 ? data.slice(0, 10) : data;
@@ -164,54 +225,29 @@ let searchButton = document.querySelector(".search-button");
 searchButton.addEventListener("click", handleSearch);
 function handleSearch() {
     return __awaiter(this, void 0, void 0, function* () {
-        let inputValue = document.querySelector(".input").value.trim().toLocaleLowerCase();
-        let dataFromLS = JSON.parse(localStorage["list"]);
+        const inputValue = getInputValue().trim().toLocaleLowerCase();
+        const dataFromLS = getDataFromLS("list");
         if (inputValue === "all") {
             handleCards(dataFromLS);
         }
         else {
-            let filteredData = dataFromLS.filter((coin) => coin.symbol.toLowerCase() === inputValue);
-            if (filteredData.length === 0) {
-                alert("we didn't fined that, try again!");
-            }
-            else {
-                handleCards(filteredData);
-            }
+            handleFilteredData(dataFromLS, inputValue);
         }
     });
 }
-// const toggles = document.querySelectorAll('input[type="checkbox"]')
-// console.log(toggles);
-//   // handleToggles(toggles);
-//   function handleToggles(toggles: NodeListOf<Element>) {
-//     toggles.forEach((toggle) => {
-//       toggle.addEventListener("click", (event) => {
-//         toggleChangeHandler(event, toggles);
-//         if ((toggle as HTMLInputElement).disabled) {
-//           debugger;
-//           alertToggles();
-//         }
-//       });
-//     });
-//   }
-// let checkedToggles = 0;
-// function toggleChangeHandler(event: Event,toggle:HTMLInputElement) {
-//   const target = event.target as HTMLInputElement;
-//   if (target.checked) {
-//     checkedToggles++;
-//   } else {
-//     checkedToggles--;
-//   }
-//   if (checkedToggles >= 5) {
-//       if (!(toggle as HTMLInputElement).checked) {
-//         (toggle as HTMLInputElement).setAttribute("disabled", "true");
-//   } else {
-//     let toggles = document.querySelectorAll('input[type="checkbox"]');
-//     toggles.forEach((toggle)=>{ (toggle as HTMLInputElement).removeAttribute("disabled")})
-//      ;
-//   }
-// }
-// }
+function getInputValue() {
+    const inputElement = document.querySelector(".input");
+    return inputElement.value;
+}
+function handleFilteredData(data, inputValue) {
+    const filteredData = data.filter((coin) => coin.symbol.toLowerCase() === inputValue);
+    if (filteredData.length === 0) {
+        alert("We didn't find that, try again!");
+    }
+    else {
+        handleCards(filteredData);
+    }
+}
 function createToggle(card) {
     let toggle = createElement("label", "switch", card);
     let input = createElement("input", "toggle", toggle);
@@ -234,28 +270,23 @@ function changePageContent() {
             switch (btn.innerHTML) {
                 case "Home":
                     input.disabled = false;
-                    homePage.style.display = "block";
-                    aboutPage.style.display = "none";
-                    liveReportsPage.style.display = "none";
+                    changes(aboutPage, liveReportsPage, homePage);
                     break;
                 case "About":
                     input.disabled = true;
-                    homePage.style.display = "none";
-                    aboutPage.style.display = "block";
-                    liveReportsPage.style.display = "none";
+                    changes(homePage, liveReportsPage, aboutPage);
                     break;
                 case "Live Reports":
                     input.disabled = true;
-                    homePage.style.display = "none";
-                    aboutPage.style.display = "none";
-                    liveReportsPage.style.display = "block";
+                    changes(homePage, aboutPage, liveReportsPage);
                     break;
             }
         });
     });
 }
 changePageContent();
-// });
-// function alertToggles() {
-//   alert("you must choose up to five coins!");
-// }
+function changes(none1, none2, block) {
+    none1.style.display = "none";
+    none2.style.display = "none";
+    block.style.display = "block";
+}
