@@ -319,3 +319,6 @@ input:checked + .slider:before {
     text-decoration: none;
     cursor: pointer;
   }
+  #myModal {
+    z-index: 1000; /* Adjust as needed */
+  }

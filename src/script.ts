@@ -89,7 +89,8 @@ function handleCards(data: Coin[]) {
   for (let i = 0; i < cardElements.length; i++) {
     getCardInfo(cardElements[i], data, i);
     handleButtons(cardElements, data, i);
-checking(togglesA,i,data[i].id)  }
+checking(togglesA,i,data[i].id)  
+}
 forEachToggle(cardElements,togglesA,data)
       
 
@@ -98,18 +99,18 @@ forEachToggle(cardElements,togglesA,data)
 
 function forEachToggle(cardElements: CardElements[], togglesA: NodeListOf<HTMLInputElement>, data: Coin[]) {
   togglesA.forEach((toggle, i) => {
-    toggle.addEventListener("change", function (event: Event) {
-      handleToggles(data[i], togglesA, event, cardElements[i]);
-      openModal()
-      
-    });
+    toggle.addEventListener("click", function () {
+      handleToggles(data[i], togglesA,i)
+    })
   });
 }
 
-function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,event:Event,cardElements:CardElements){
+function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,i:number){
     addToToggleObject(data.id)
-      let isFive = checkedTogglesLessThenFive();
-      togglesState(isFive, togglesA);
+    if(checkedTogglesMoreThenFive()){
+      togglesState( togglesA,i,data.id)
+      openModal(i)}
+      
     }
 
     
@@ -119,26 +120,25 @@ function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,event:Ev
       }
     }
 
-function checkedTogglesLessThenFive():boolean{
+function checkedTogglesMoreThenFive():boolean{
   let checkedToggles = 0
   for (const key in toggles){
     if(toggles[key]===true){
       checkedToggles++
     }
   }
-  return checkedToggles === 5
-  
+  return checkedToggles === 6
 }
+
 
 
 function addToToggleObject(key: string) {
   toggles[key] = !toggles[key];
 }
 
-function togglesState(isFive: boolean, togglesA: NodeListOf<HTMLInputElement>) {
-  togglesA.forEach(toggle => {
-    toggle.disabled = isFive ? !toggle.checked : false;
-  });
+function togglesState( togglesA: NodeListOf<HTMLInputElement>,i:number,key:string) {
+    togglesA[i].checked = false
+    toggles[key] = false
 }
 
 function handleButtons(cardElements:CardElements[]
@@ -387,14 +387,13 @@ const modal = document.getElementById("myModal") as HTMLElement;
 
 
 
-function openModal(){
-  let btn = document.querySelector("#myBtn") as HTMLButtonElement;
-  debugger
+function openModal(i:number){
+  let btn = document.querySelectorAll("#myBtn") as NodeListOf<HTMLButtonElement>;
   let span = document.querySelector(".close") as HTMLButtonElement
   span.onclick = function() {
     modal.style.display = "none";
   }
-  btn.onclick = function() {
+  btn[i].onclick = function() {
     modal.style.display = "block";
   }
   span.onclick = function() {

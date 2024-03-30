@@ -77,38 +77,38 @@ function handleCards(data) {
 }
 function forEachToggle(cardElements, togglesA, data) {
     togglesA.forEach((toggle, i) => {
-        toggle.addEventListener("change", function (event) {
-            handleToggles(data[i], togglesA, event, cardElements[i]);
-            openModal();
+        toggle.addEventListener("click", function () {
+            handleToggles(data[i], togglesA, i);
         });
     });
 }
-function handleToggles(data, togglesA, event, cardElements) {
+function handleToggles(data, togglesA, i) {
     addToToggleObject(data.id);
-    let isFive = checkedTogglesLessThenFive();
-    togglesState(isFive, togglesA);
+    if (checkedTogglesMoreThenFive()) {
+        togglesState(togglesA, i, data.id);
+        openModal(i);
+    }
 }
 function checking(togglesA, i, key) {
     if (toggles[key] === true) {
         (togglesA[i].checked = true);
     }
 }
-function checkedTogglesLessThenFive() {
+function checkedTogglesMoreThenFive() {
     let checkedToggles = 0;
     for (const key in toggles) {
         if (toggles[key] === true) {
             checkedToggles++;
         }
     }
-    return checkedToggles === 5;
+    return checkedToggles === 6;
 }
 function addToToggleObject(key) {
     toggles[key] = !toggles[key];
 }
-function togglesState(isFive, togglesA) {
-    togglesA.forEach(toggle => {
-        toggle.disabled = isFive ? !toggle.checked : false;
-    });
+function togglesState(togglesA, i, key) {
+    togglesA[i].checked = false;
+    toggles[key] = false;
 }
 function handleButtons(cardElements, data, i) {
     cardElements[i].button.addEventListener("click", () => {
@@ -294,14 +294,13 @@ function changes(none1, none2, block) {
     block.style.display = "block";
 }
 const modal = document.getElementById("myModal");
-function openModal() {
-    let btn = document.querySelector("#myBtn");
-    debugger;
+function openModal(i) {
+    let btn = document.querySelectorAll("#myBtn");
     let span = document.querySelector(".close");
     span.onclick = function () {
         modal.style.display = "none";
     };
-    btn.onclick = function () {
+    btn[i].onclick = function () {
         modal.style.display = "block";
     };
     span.onclick = function () {
