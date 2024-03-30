@@ -68,46 +68,46 @@ function handleCards(data) {
     cardContainer.innerHTML = "";
     let cardElements = buildCardsElements(numberOfCardsOnPage(data));
     let togglesA = document.querySelectorAll('input[type="checkbox"]');
-    console.log(togglesA);
     for (let i = 0; i < cardElements.length; i++) {
         getCardInfo(cardElements[i], data, i);
         handleButtons(cardElements, data, i);
-        cardElements[i].toggle.addEventListener("change", function (event) {
-            if (checkedToggles >= 5) {
-                togglesState(togglesA, true);
-            }
-            else {
-                togglesState(togglesA, false);
-            }
-            let eventtarget = event.target;
-            handleToggles(data, i, cardElements, eventtarget);
-            console.log(checkedToggles);
-            for (const key in toggles) {
-                if (toggles[key] === true) {
-                    checkedToggles++;
-                }
-            }
-            console.log(checkedToggles);
+        checking(togglesA, i, data[i].id);
+    }
+    forEachToggle(cardElements, togglesA, data);
+}
+function forEachToggle(cardElements, togglesA, data) {
+    togglesA.forEach((toggle, i) => {
+        toggle.addEventListener("change", function (event) {
+            handleToggles(data[i], togglesA, event, cardElements[i]);
+            openModal();
         });
+    });
+}
+function handleToggles(data, togglesA, event, cardElements) {
+    addToToggleObject(data.id);
+    let isFive = checkedTogglesLessThenFive();
+    togglesState(isFive, togglesA);
+}
+function checking(togglesA, i, key) {
+    if (toggles[key] === true) {
+        (togglesA[i].checked = true);
     }
 }
-let checkedToggles = 0;
-function handleToggles(data, i, cardElements, eventtarget) {
-    if (eventtarget.checked) {
-        debugger;
-        toggles[data[i].id] = true;
-    }
-    else {
-        debugger;
-        toggles[data[i].id] = false;
-    }
-    // console.log(checkedToggles);
-}
-function togglesState(togglesA, state) {
-    togglesA.forEach(toggle => {
-        if (toggle.checked = false) {
-            toggle.disabled = state;
+function checkedTogglesLessThenFive() {
+    let checkedToggles = 0;
+    for (const key in toggles) {
+        if (toggles[key] === true) {
+            checkedToggles++;
         }
+    }
+    return checkedToggles === 5;
+}
+function addToToggleObject(key) {
+    toggles[key] = !toggles[key];
+}
+function togglesState(isFive, togglesA) {
+    togglesA.forEach(toggle => {
+        toggle.disabled = isFive ? !toggle.checked : false;
     });
 }
 function handleButtons(cardElements, data, i) {
@@ -211,6 +211,7 @@ function buildCardsElements(numberOfCardsOnPage) {
         let cardText = createElement("p", "MY-card-text", card);
         let button = createElement("button", "btn", card);
         button.setAttribute("isFalse", "false");
+        toggle.id = "myBtn";
         let spinner = createSpinner(card);
         cardElements.push({ card, cardTitle, cardText, toggle, button, spinner });
     }
@@ -226,12 +227,13 @@ searchButton.addEventListener("click", handleSearch);
 function handleSearch() {
     return __awaiter(this, void 0, void 0, function* () {
         const inputValue = getInputValue().trim().toLocaleLowerCase();
-        const dataFromLS = getDataFromLS("list");
+        let dataFromLS = getDataFromLS("list");
         if (inputValue === "all") {
             handleCards(dataFromLS);
         }
         else {
-            handleFilteredData(dataFromLS, inputValue);
+            dataFromLS = handleFilteredData(dataFromLS, inputValue);
+            handleCards(dataFromLS);
         }
     });
 }
@@ -243,9 +245,10 @@ function handleFilteredData(data, inputValue) {
     const filteredData = data.filter((coin) => coin.symbol.toLowerCase() === inputValue);
     if (filteredData.length === 0) {
         alert("We didn't find that, try again!");
+        return [];
     }
     else {
-        handleCards(filteredData);
+        return filteredData;
     }
 }
 function createToggle(card) {
@@ -289,4 +292,24 @@ function changes(none1, none2, block) {
     none1.style.display = "none";
     none2.style.display = "none";
     block.style.display = "block";
+}
+const modal = document.getElementById("myModal");
+function openModal() {
+    let btn = document.querySelector("#myBtn");
+    debugger;
+    let span = document.querySelector(".close");
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+    btn.onclick = function () {
+        modal.style.display = "block";
+    };
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
 }

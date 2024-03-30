@@ -85,61 +85,61 @@ function handleCards(data: Coin[]) {
   cardContainer.innerHTML = "";
   let cardElements = buildCardsElements(numberOfCardsOnPage(data)); 
   let togglesA = document.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>
-  console.log(togglesA)
 
   for (let i = 0; i < cardElements.length; i++) {
     getCardInfo(cardElements[i], data, i);
     handleButtons(cardElements, data, i);
-    cardElements[i].toggle.addEventListener("change", function(event) {
-      if (checkedToggles >= 5) {
-        togglesState(togglesA,true);
-      } else {
-        togglesState(togglesA,false);
-      } 
-      let eventtarget = event.target as HTMLInputElement
-    handleToggles(data, i, cardElements,eventtarget);
-    console.log(checkedToggles)
-  for (const key in toggles){
-    if(toggles[key] === true){
-      checkedToggles++
-    }
-  }
-console.log(checkedToggles)
-  
-  })
-  }
+checking(togglesA,i,data[i].id)  }
+forEachToggle(cardElements,togglesA,data)
+      
 
- 
+
 }
 
-let checkedToggles = 0
-
-function handleToggles(data: Coin[], i: number, cardElements: CardElements[],eventtarget:HTMLInputElement) {
- if (eventtarget.checked) {
-  debugger
-      toggles[data[i].id] = true;
-    } else {
-      debugger
-      toggles[data[i].id] = false;
-    }
-    // console.log(checkedToggles);
-
-   
-}
-function togglesState(togglesA: NodeListOf<HTMLInputElement>,state:boolean) {
-  togglesA.forEach(toggle => {
-    if (toggle.checked = false){
-      toggle.disabled = state
-    }
-    
+function forEachToggle(cardElements: CardElements[], togglesA: NodeListOf<HTMLInputElement>, data: Coin[]) {
+  togglesA.forEach((toggle, i) => {
+    toggle.addEventListener("change", function (event: Event) {
+      handleToggles(data[i], togglesA, event, cardElements[i]);
+      openModal()
+      
+    });
   });
 }
 
+function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,event:Event,cardElements:CardElements){
+    addToToggleObject(data.id)
+      let isFive = checkedTogglesLessThenFive();
+      togglesState(isFive, togglesA);
+    }
+
+    
+    function checking(togglesA:NodeListOf<HTMLInputElement>,i:number, key: string) {
+      if (toggles[key] === true) {
+       (togglesA[i].checked = true)
+      }
+    }
+
+function checkedTogglesLessThenFive():boolean{
+  let checkedToggles = 0
+  for (const key in toggles){
+    if(toggles[key]===true){
+      checkedToggles++
+    }
+  }
+  return checkedToggles === 5
+  
+}
 
 
+function addToToggleObject(key: string) {
+  toggles[key] = !toggles[key];
+}
 
-
-
+function togglesState(isFive: boolean, togglesA: NodeListOf<HTMLInputElement>) {
+  togglesA.forEach(toggle => {
+    toggle.disabled = isFive ? !toggle.checked : false;
+  });
+}
 
 function handleButtons(cardElements:CardElements[]
   ,data:Coin[],i:number){
@@ -220,9 +220,6 @@ return  data.length > 100 ? data.slice(0, 10) : data;
 let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
 
 
-
-
-
 async function fetchData(key:"list"): Promise<Coin[]>
 async function fetchData(key:string): Promise<CoinID>
 async function fetchData(key:string): Promise<CoinID|Coin[]> {
@@ -270,7 +267,8 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
     let cardText = createElement("p", "MY-card-text", card) as HTMLElement;
     let button = createElement("button", "btn", card) as HTMLButtonElement;
     button.setAttribute("isFalse", "false");
-   
+   toggle.id ="myBtn"
+  
     let spinner = createSpinner(card)
     cardElements.push({ card, cardTitle, cardText,toggle,button,spinner});
  
@@ -298,12 +296,13 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
 
   async function handleSearch() {
     const inputValue = getInputValue().trim().toLocaleLowerCase();
-    const dataFromLS = getDataFromLS("list");
+    let dataFromLS = getDataFromLS("list");
   
     if (inputValue === "all") {
       handleCards(dataFromLS);
     } else {
-      handleFilteredData(dataFromLS, inputValue);
+     dataFromLS = handleFilteredData(dataFromLS,inputValue)
+      handleCards(dataFromLS);
     }
   }
   
@@ -315,12 +314,13 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
  
   
 
-  function handleFilteredData(data: Coin[], inputValue: string): void {
+  function handleFilteredData(data: Coin[], inputValue: string): Coin[] {
     const filteredData = data.filter((coin) => coin.symbol.toLowerCase() === inputValue);
     if (filteredData.length === 0) {
       alert("We didn't find that, try again!");
+      return []
     } else {
-      handleCards(filteredData);
+     return filteredData;
     }
   }
   
@@ -332,6 +332,8 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
     input.type = "checkbox";
     let span = createElement("span", "slider", toggle);
     span.classList.add("round");
+
+    
     return toggle
   }
 
@@ -380,4 +382,29 @@ none2.style.display = "none"
 block.style.display = "block"
 }
 
+const modal = document.getElementById("myModal") as HTMLElement;
+
+
+
+
+function openModal(){
+  let btn = document.querySelector("#myBtn") as HTMLButtonElement;
+  debugger
+  let span = document.querySelector(".close") as HTMLButtonElement
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+  }   
 
