@@ -318,7 +318,7 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
     const filteredData = data.filter((coin) => coin.symbol.toLowerCase() === inputValue);
     if (filteredData.length === 0) {
       alert("We didn't find that, try again!");
-      return []
+      return data
     } else {
      return filteredData;
     }
