@@ -1,6 +1,6 @@
 {
   "dependencies": {
     "@canvasjs/charts": "^3.7.45",
-    "chart.js": "^4.4.2"
+    "@types/chart.js": "^2.9.41"
   }
 }

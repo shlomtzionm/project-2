@@ -1,4 +1,3 @@
-import Chart from 'chart.js/auto';
 class Coin {
   id: string;
   symbol: string;
@@ -42,6 +41,15 @@ class CardElements {
      this.toggle = toggle
   }
 }
+
+class secondeApi {
+  usd: number;
+  constructor(usd:number){
+    this.usd = usd
+  }
+}
+
+
 let data:Coin[]
 async function init() {
    data = await getInformation("list");
@@ -426,34 +434,13 @@ function saveChangesToggleObject() {
 
 saveChanges.addEventListener("click",saveChangesToggleObject)
 
-// let chartElement = document.querySelector("#myChart") as ChartItem
-// (async function() {
-//   const data = [
-//     { year: 2010, count: 10 },
-//     { year: 2011, count: 20 },
-//     { year: 2012, count: 15 },
-//     { year: 2013, count: 25 },
-//     { year: 2014, count: 22 },
-//     { year: 2015, count: 30 },
-//     { year: 2016, count: 28 },
-//   ];
-
-//   new Chart(
-//    chartElement,
-//     {
-//       type: 'bar',
-//       data: {
-//         labels: data.map(row => row.year),
-//         datasets: [
-//           {
-//             label: 'Acquisitions by year',
-//             data: data.map(row => row.count)
-//           }
-//         ]
-//       }
-//     }
-//   );
-// })();
- 
-
+let coinsIdToFetch = []
+function coinsToFetch(){
+for(const key in toggles){
+  if(toggles[key] === true){
+    let coinId = `${key},`
+    coinsIdToFetch.push(coinId)
+  }
+}
+}
 

@@ -8,7 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
 class Coin {
     constructor(id, symbol, name) {
         this.id = id;
@@ -331,30 +330,3 @@ function saveChangesToggleObject() {
     }
 }
 saveChanges.addEventListener("click", saveChangesToggleObject);
-// let chartElement = document.querySelector("#myChart") as ChartItem
-// (async function() {
-//   const data = [
-//     { year: 2010, count: 10 },
-//     { year: 2011, count: 20 },
-//     { year: 2012, count: 15 },
-//     { year: 2013, count: 25 },
-//     { year: 2014, count: 22 },
-//     { year: 2015, count: 30 },
-//     { year: 2016, count: 28 },
-//   ];
-//   new Chart(
-//    chartElement,
-//     {
-//       type: 'bar',
-//       data: {
-//         labels: data.map(row => row.year),
-//         datasets: [
-//           {
-//             label: 'Acquisitions by year',
-//             data: data.map(row => row.count)
-//           }
-//         ]
-//       }
-//     }
-//   );
-// })();
