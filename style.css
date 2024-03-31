@@ -117,7 +117,9 @@ body {
     color: #555555;
 }
 
-.btn {
+.btn,
+.saveChanges,
+.UndoChanges {
     background-color: #00ff08;
     color: #ffffff;
     border: none;
@@ -126,7 +128,9 @@ body {
     cursor: pointer;
 }
 
-.btn:hover {
+.btn:hover ,
+.saveChanges:hover,
+.UndoChanges:hover{
     background-color: #0a870e;
 }
 
@@ -305,20 +309,17 @@ input:checked + .slider:before {
     width: 80%; /* Could be more or less, depending on screen size */
   }
   
-  /* The Close Button */
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-  }
   
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
   #myModal {
     z-index: 1000; /* Adjust as needed */
+  }
+
+  .modalToggle{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between
+  }
+  .saveChanges,
+  .UndoChanges{
+    margin-bottom: 10px;
   }

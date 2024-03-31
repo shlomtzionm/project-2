@@ -9,8 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 class Coin {
-    constructor(id, symbol, name, isChecked) {
-        this.isChecked = isChecked;
+    constructor(id, symbol, name) {
         this.id = id;
         this.name = name;
         this.symbol = symbol;
@@ -32,9 +31,10 @@ class CardElements {
         this.toggle = toggle;
     }
 }
+let data;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
-        let data = yield getInformation("list");
+        data = yield getInformation("list");
         handleCards(data);
     });
 }
@@ -67,27 +67,28 @@ let toggles = {};
 function handleCards(data) {
     cardContainer.innerHTML = "";
     let cardElements = buildCardsElements(numberOfCardsOnPage(data));
-    let togglesA = document.querySelectorAll('input[type="checkbox"]');
     for (let i = 0; i < cardElements.length; i++) {
-        getCardInfo(cardElements[i], data, i);
-        handleButtons(cardElements, data, i);
-        checking(togglesA, i, data[i].id);
-        handleToggles(data[i], togglesA, i);
+        getCardInfo(cardElements[i], data[i]);
+        handleButtons(cardElements[i], data[i]);
+        handleToggles(data[i], cardElements[i].toggle);
+        checking(cardElements[i].toggle, data[i].id);
     }
 }
-function handleToggles(data, togglesA, i) {
-    togglesA[i].addEventListener("click", function () {
+function handleToggles(data, toggle) {
+    toggle.addEventListener("click", function () {
         addToToggleObject(data.id);
         if (checkedTogglesMoreThenFive()) {
-            togglesState(togglesA, i, data.id);
+            togglesState(toggle, data.id);
             showModal(modal, "block");
-            span.addEventListener("click", function () { showModal(modal, "none"); });
         }
     });
 }
-function checking(togglesA, i, key) {
+function checking(toggle, key) {
     if (toggles[key] === true) {
-        (togglesA[i].checked = true);
+        (toggle.checked = true);
+    }
+    else {
+        (toggle.checked = false);
     }
 }
 function checkedTogglesMoreThenFive() {
@@ -103,15 +104,15 @@ function checkedTogglesMoreThenFive() {
 function addToToggleObject(key) {
     toggles[key] = !toggles[key];
 }
-function togglesState(togglesA, i, key) {
-    togglesA[i].checked = false;
+function togglesState(toggle, key) {
+    toggle.checked = false;
     toggles[key] = false;
 }
-function handleButtons(cardElements, data, i) {
-    cardElements[i].button.addEventListener("click", () => {
-        showSpinner(cardElements[i].spinner);
-        buttonMoreInfo(cardElements[i], data, i);
-        disableSpinner(cardElements[i].spinner);
+function handleButtons(cardElements, data) {
+    cardElements.button.addEventListener("click", () => {
+        showSpinner(cardElements.spinner);
+        buttonMoreInfo(cardElements, data);
+        disableSpinner(cardElements.spinner);
     });
 }
 function disableSpinner(spinner) {
@@ -120,19 +121,18 @@ function disableSpinner(spinner) {
 function showSpinner(spinner) {
     spinner.style.display = "block";
 }
-function getCardInfo(cardElements, data, i) {
-    cardElements.cardTitle.innerText = data[i].symbol;
-    cardElements.cardText.innerText = data[i].name;
+function getCardInfo(cardElements, data) {
+    cardElements.cardTitle.innerText = data.symbol;
+    cardElements.cardText.innerText = data.name;
     cardElements.button.innerText = "more info";
-    cardElements.toggle.checked = data[i].isChecked;
 }
-function buttonMoreInfo(cardElements, data, i) {
+function buttonMoreInfo(cardElements, data) {
     return __awaiter(this, void 0, void 0, function* () {
         if (isButtonFalse(cardElements)) {
-            yield showCoinInfo(cardElements, data[i]);
+            yield showCoinInfo(cardElements, data);
         }
         else {
-            resetCardInfo(cardElements, data, i);
+            resetCardInfo(cardElements, data);
         }
     });
 }
@@ -147,8 +147,8 @@ function showCoinInfo(cardElements, coin) {
         setButtonState(cardElements.button, true);
     });
 }
-function resetCardInfo(cardElements, coin, i) {
-    getCardInfo(cardElements, coin, i);
+function resetCardInfo(cardElements, coin) {
+    getCardInfo(cardElements, coin);
     setButtonState(cardElements.button, false);
 }
 function clearCardText(cardElements) {
@@ -221,6 +221,7 @@ let input = document.querySelector(".input");
 let btnArray = document.querySelectorAll(".navButton");
 let searchButton = document.querySelector(".search-button");
 searchButton.addEventListener("click", handleSearch);
+let filteredData;
 function handleSearch() {
     return __awaiter(this, void 0, void 0, function* () {
         const inputValue = getInputValue().trim().toLocaleLowerCase();
@@ -254,7 +255,7 @@ function createToggle(card) {
     input.type = "checkbox";
     let span = createElement("span", "slider", toggle);
     span.classList.add("round");
-    return toggle;
+    return input;
 }
 function getDataFromLS(key) {
     if (localStorage[`${key}`]) {
@@ -291,13 +292,41 @@ function changes(none1, none2, block) {
     block.style.display = "block";
 }
 const modal = document.getElementById("myModal");
-let span = document.querySelector(".close");
-// window.onclick = function(event) {
-//   if (event.target !== modal) {
-//     modal.style.display = "none";
-//   }
-// }
-// }   
+let saveChanges = document.querySelector(".saveChanges");
+let UndoChangesButton = document.querySelector(".UndoChanges");
+UndoChangesButton.addEventListener("click", function () { showModal(modal, "none"); });
 function showModal(modal, display) {
     modal.style.display = display;
+    getModalContent();
 }
+let modalContent = document.querySelector(".modalContent");
+function getModalContent() {
+    let keys = [];
+    modalContent.innerText = "";
+    for (const key in toggles) {
+        if (toggles[key] === true) {
+            let div = createElement("div", "modalToggle", modalContent);
+            div.innerText = key;
+            let toggle = createToggle(div);
+            toggle.checked = true;
+            keys.push(key);
+        }
+    }
+}
+function saveChangesToggleObject() {
+    let modalToggles = document.querySelectorAll(".modalToggle");
+    modalToggles.forEach((element) => {
+        let input = element.querySelector(".toggle");
+        if (!input.checked) {
+            addToToggleObject(element.innerText);
+        }
+    });
+    showModal(modal, "none");
+    if (filteredData && filteredData.length > 0) {
+        handleCards(filteredData);
+    }
+    else {
+        handleCards(data);
+    }
+}
+saveChanges.addEventListener("click", saveChangesToggleObject);

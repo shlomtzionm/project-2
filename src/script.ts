@@ -3,9 +3,7 @@ class Coin {
   id: string;
   symbol: string;
   name: string;
-  isChecked: boolean
-  constructor(id: string, symbol: string, name: string,  isChecked: boolean) {
-    this.isChecked = isChecked;
+  constructor(id: string, symbol: string, name: string) {
     this.id = id;
     this.name = name;
     this.symbol = symbol;
@@ -44,10 +42,11 @@ class CardElements {
      this.toggle = toggle
   }
 }
-
+let data:Coin[]
 async function init() {
-  let data = await getInformation("list");
+   data = await getInformation("list");
 handleCards(data)
+
 }
 init()
 
@@ -84,33 +83,36 @@ let toggles: { [key: string]: boolean } = {};
 function handleCards(data: Coin[]) {
   cardContainer.innerHTML = "";
   let cardElements = buildCardsElements(numberOfCardsOnPage(data)); 
-  let togglesA = document.querySelectorAll('input[type="checkbox"]') as NodeListOf<HTMLInputElement>
 
   for (let i = 0; i < cardElements.length; i++) {
-    getCardInfo(cardElements[i], data, i);
-    handleButtons(cardElements, data, i);
-checking(togglesA,i,data[i].id)
-handleToggles(data[i],togglesA,i)  
+    getCardInfo(cardElements[i], data[i]);
+    handleButtons(cardElements[i], data[i]);
+handleToggles(data[i],cardElements[i].toggle)  
+checking(cardElements[i].toggle,data[i].id)
 }
 }
 
 
 
-function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,i:number){
-  togglesA[i].addEventListener("click", function () {
+function handleToggles( data:Coin,toggle:HTMLInputElement,){
+  toggle.addEventListener("click", function () {
   addToToggleObject(data.id)
     if(checkedTogglesMoreThenFive()){
-      togglesState( togglesA,i,data.id)
+      togglesState(toggle,data.id)
      showModal(modal,"block")
-    span.addEventListener("click",function(){showModal(modal,"none")})
+     
     }
     })
     }
 
     
-    function checking(togglesA:NodeListOf<HTMLInputElement>,i:number, key: string) {
+
+    
+    function checking(toggle:HTMLInputElement, key: string) {
       if (toggles[key] === true) {
-       (togglesA[i].checked = true)
+       (toggle.checked = true)
+      } else {
+        (toggle.checked = false)
       }
     }
 
@@ -131,17 +133,17 @@ function addToToggleObject(key: string) {
   toggles[key] = !toggles[key];
 }
 
-function togglesState( togglesA: NodeListOf<HTMLInputElement>,i:number,key:string) {
-    togglesA[i].checked = false
+function togglesState( toggle:HTMLInputElement,key:string) {
+    toggle.checked = false
     toggles[key] = false
 }
 
-function handleButtons(cardElements:CardElements[]
-  ,data:Coin[],i:number){
-  cardElements[i].button.addEventListener("click",() => {
-    showSpinner(cardElements[i].spinner)
-      buttonMoreInfo(cardElements[i], data, i)
-       disableSpinner(cardElements[i].spinner)
+function handleButtons(cardElements:CardElements
+  ,data:Coin){
+  cardElements.button.addEventListener("click",() => {
+    showSpinner(cardElements.spinner)
+      buttonMoreInfo(cardElements, data)
+       disableSpinner(cardElements.spinner)
      })  
 }
 
@@ -153,18 +155,17 @@ function showSpinner(spinner:HTMLElement){
 }
 
 function getCardInfo(cardElements:CardElements , 
-  data:Coin[], i:number) {
-  cardElements.cardTitle.innerText = data[i].symbol;
-  cardElements.cardText.innerText = data[i].name;
+  data:Coin) {
+  cardElements.cardTitle.innerText = data.symbol;
+  cardElements.cardText.innerText = data.name;
   cardElements.button.innerText = "more info";
-  cardElements.toggle.checked = data[i].isChecked;
 }
 
-async function buttonMoreInfo(cardElements: CardElements, data: Coin[], i: number) {
+async function buttonMoreInfo(cardElements: CardElements, data: Coin) {
   if (isButtonFalse(cardElements)) {
-      await showCoinInfo(cardElements, data[i]);
+      await showCoinInfo(cardElements, data);
   } else {
-      resetCardInfo(cardElements, data,i);
+      resetCardInfo(cardElements, data);
   }
 }
 
@@ -179,8 +180,8 @@ async function showCoinInfo(cardElements: CardElements, coin: Coin) {
   setButtonState(cardElements.button, true);
 }
 
-function resetCardInfo(cardElements: CardElements, coin: Coin[],i:number) {
-  getCardInfo(cardElements, coin,i);
+function resetCardInfo(cardElements: CardElements, coin: Coin,) {
+  getCardInfo(cardElements, coin);
   setButtonState(cardElements.button, false);
 }
 
@@ -289,6 +290,7 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
 
   searchButton.addEventListener("click", handleSearch);
 
+  let filteredData:Coin[]
   async function handleSearch() {
     const inputValue = getInputValue().trim().toLocaleLowerCase();
     let dataFromLS = getDataFromLS("list");
@@ -327,9 +329,7 @@ function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
     input.type = "checkbox";
     let span = createElement("span", "slider", toggle);
     span.classList.add("round");
-
-    
-    return toggle
+    return input
   }
 
 
@@ -378,20 +378,73 @@ block.style.display = "block"
 }
 
 const modal = document.getElementById("myModal") as HTMLElement;
-let span = document.querySelector(".close") as HTMLButtonElement
+let saveChanges = document.querySelector(".saveChanges") as HTMLButtonElement
+let UndoChangesButton = document.querySelector(".UndoChanges") as HTMLButtonElement
 
-
-
-
-  // window.onclick = function(event) {
-  //   if (event.target !== modal) {
-  //     modal.style.display = "none";
-  //   }
-  // }
-  // }   
+UndoChangesButton.addEventListener("click",function()
+{showModal(modal,"none")})
+ 
 
 function showModal(modal:HTMLElement,display:string){
   modal.style.display = display;
+  getModalContent()
 }
 
+
+let modalContent = document.querySelector(".modalContent") as HTMLElement;
+
+function getModalContent() {
+    let keys: string[] = []; 
+modalContent.innerText = ""
+    for (const key in toggles) {
+        if (toggles[key] === true) {
+            let div = createElement("div", "modalToggle", modalContent);
+            div.innerText = key;
+            let toggle = createToggle(div);
+            toggle.checked = true;
+            keys.push(key);
+        }
+    }
+}
+
+
+function saveChangesToggleObject() {
+  let modalToggles = document.querySelectorAll(".modalToggle") as NodeListOf<HTMLInputElement>;
+  modalToggles.forEach((element) => {
+    let input = element.querySelector(".toggle") as HTMLInputElement
+    if (!input.checked) {
+      addToToggleObject(element.innerText);
+    }
+  });
+  showModal(modal,"none")
+  if (filteredData && filteredData.length>0) {
+    handleCards(filteredData); 
+  } else {
+    handleCards(data); 
+  }
+}
+
+saveChanges.addEventListener("click",saveChangesToggleObject)
+
+
+
+	var chart = new CanvasJS.Chart("chartContainer", {
+		title:{
+			text: "My First Chart in CanvasJS"              
+		},
+		data: [              
+		{
+			// Change type to "doughnut", "line", "splineArea", etc.
+			type: "column",
+			dataPoints: [
+				{ label: "apple",  y: 30  },
+				{ label: "orange", y: 15  },
+				{ label: "banana", y: 25  },
+				{ label: "mango",  y: 30  },
+				{ label: "grape",  y: 28  }
+			]
+		}
+		]
+	});
+	chart.render();
 
