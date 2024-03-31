@@ -89,28 +89,22 @@ function handleCards(data: Coin[]) {
   for (let i = 0; i < cardElements.length; i++) {
     getCardInfo(cardElements[i], data, i);
     handleButtons(cardElements, data, i);
-checking(togglesA,i,data[i].id)  
+checking(togglesA,i,data[i].id)
+handleToggles(data[i],togglesA,i)  
 }
-forEachToggle(cardElements,togglesA,data)
-      
-
-
 }
 
-function forEachToggle(cardElements: CardElements[], togglesA: NodeListOf<HTMLInputElement>, data: Coin[]) {
-  togglesA.forEach((toggle, i) => {
-    toggle.addEventListener("click", function () {
-      handleToggles(data[i], togglesA,i)
-    })
-  });
-}
+
 
 function handleToggles( data:Coin,togglesA:NodeListOf<HTMLInputElement>,i:number){
-    addToToggleObject(data.id)
+  togglesA[i].addEventListener("click", function () {
+  addToToggleObject(data.id)
     if(checkedTogglesMoreThenFive()){
       togglesState( togglesA,i,data.id)
-      openModal(i)}
-      
+     showModal(modal,"block")
+    span.addEventListener("click",function(){showModal(modal,"none")})
+    }
+    })
     }
 
     
@@ -127,6 +121,7 @@ function checkedTogglesMoreThenFive():boolean{
       checkedToggles++
     }
   }
+  console.log(checkedToggles)
   return checkedToggles === 6
 }
 
@@ -383,27 +378,20 @@ block.style.display = "block"
 }
 
 const modal = document.getElementById("myModal") as HTMLElement;
+let span = document.querySelector(".close") as HTMLButtonElement
 
 
 
 
-function openModal(i:number){
-  let btn = document.querySelectorAll("#myBtn") as NodeListOf<HTMLButtonElement>;
-  let span = document.querySelector(".close") as HTMLButtonElement
-  span.onclick = function() {
-    modal.style.display = "none";
-  }
-  btn[i].onclick = function() {
-    modal.style.display = "block";
-  }
-  span.onclick = function() {
-    modal.style.display = "none";
-  }
+  // window.onclick = function(event) {
+  //   if (event.target !== modal) {
+  //     modal.style.display = "none";
+  //   }
+  // }
+  // }   
 
-  window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  }
-  }   
+function showModal(modal:HTMLElement,display:string){
+  modal.style.display = display;
+}
+
 

@@ -72,22 +72,18 @@ function handleCards(data) {
         getCardInfo(cardElements[i], data, i);
         handleButtons(cardElements, data, i);
         checking(togglesA, i, data[i].id);
+        handleToggles(data[i], togglesA, i);
     }
-    forEachToggle(cardElements, togglesA, data);
-}
-function forEachToggle(cardElements, togglesA, data) {
-    togglesA.forEach((toggle, i) => {
-        toggle.addEventListener("click", function () {
-            handleToggles(data[i], togglesA, i);
-        });
-    });
 }
 function handleToggles(data, togglesA, i) {
-    addToToggleObject(data.id);
-    if (checkedTogglesMoreThenFive()) {
-        togglesState(togglesA, i, data.id);
-        openModal(i);
-    }
+    togglesA[i].addEventListener("click", function () {
+        addToToggleObject(data.id);
+        if (checkedTogglesMoreThenFive()) {
+            togglesState(togglesA, i, data.id);
+            showModal(modal, "block");
+            span.addEventListener("click", function () { showModal(modal, "none"); });
+        }
+    });
 }
 function checking(togglesA, i, key) {
     if (toggles[key] === true) {
@@ -101,6 +97,7 @@ function checkedTogglesMoreThenFive() {
             checkedToggles++;
         }
     }
+    console.log(checkedToggles);
     return checkedToggles === 6;
 }
 function addToToggleObject(key) {
@@ -294,21 +291,13 @@ function changes(none1, none2, block) {
     block.style.display = "block";
 }
 const modal = document.getElementById("myModal");
-function openModal(i) {
-    let btn = document.querySelectorAll("#myBtn");
-    let span = document.querySelector(".close");
-    span.onclick = function () {
-        modal.style.display = "none";
-    };
-    btn[i].onclick = function () {
-        modal.style.display = "block";
-    };
-    span.onclick = function () {
-        modal.style.display = "none";
-    };
-    window.onclick = function (event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    };
+let span = document.querySelector(".close");
+// window.onclick = function(event) {
+//   if (event.target !== modal) {
+//     modal.style.display = "none";
+//   }
+// }
+// }   
+function showModal(modal, display) {
+    modal.style.display = display;
 }
