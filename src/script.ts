@@ -1,3 +1,4 @@
+
 class Coin {
   id: string;
   symbol: string;
@@ -448,18 +449,18 @@ function coinsToFetch(): string {
     if (toggles[key] === true) {
       chosenCoins.push(key);
     }
-  }
-  return chosenCoins.join(',');
+  } 
+  return chosenCoins.join(',').toString();
 }
+
 
 function handleLive() {
   intervalId  = setInterval(async () => {
-  await  fetchChosenCoins(coinsToFetch())
-  console.log(fetchChosenCoins(coinsToFetch()));
+  console.log(await fetchChosenCoins(coinsToFetch()));
   }, 2000);
 }
 let intervalId: number 
 
 function stopLive() {
-  clearInterval(intervalId); // Stop the interval using clearInterval
+  clearInterval(intervalId); 
 }

@@ -350,15 +350,14 @@ function coinsToFetch() {
             chosenCoins.push(key);
         }
     }
-    return chosenCoins.join(',');
+    return chosenCoins.join(',').toString();
 }
 function handleLive() {
     intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
-        yield fetchChosenCoins(coinsToFetch());
-        console.log(fetchChosenCoins(coinsToFetch()));
+        console.log(yield fetchChosenCoins(coinsToFetch()));
     }), 2000);
 }
 let intervalId;
 function stopLive() {
-    clearInterval(intervalId); // Stop the interval using clearInterval
+    clearInterval(intervalId);
 }
