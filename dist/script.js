@@ -31,6 +31,11 @@ class CardElements {
         this.toggle = toggle;
     }
 }
+class secondeApi {
+    constructor(usd) {
+        this.usd = usd;
+    }
+}
 let data;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -272,13 +277,16 @@ function changePageContent() {
                 case "Home":
                     input.disabled = false;
                     changes(aboutPage, liveReportsPage, homePage);
+                    stopLive();
                     break;
                 case "About":
                     input.disabled = true;
                     changes(homePage, liveReportsPage, aboutPage);
+                    stopLive();
                     break;
                 case "Live Reports":
                     input.disabled = true;
+                    handleLive();
                     changes(homePage, aboutPage, liveReportsPage);
                     break;
             }
@@ -330,3 +338,27 @@ function saveChangesToggleObject() {
     }
 }
 saveChanges.addEventListener("click", saveChangesToggleObject);
+function fetchChosenCoins(coins) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let res = yield fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins},&tsyms=USD,EUR`);
+    });
+}
+function coinsToFetch() {
+    const chosenCoins = [];
+    for (const key in toggles) {
+        if (toggles[key] === true) {
+            chosenCoins.push(key);
+        }
+    }
+    return chosenCoins.join(',');
+}
+function handleLive() {
+    intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
+        yield fetchChosenCoins(coinsToFetch());
+        console.log(fetchChosenCoins(coinsToFetch()));
+    }), 2000);
+}
+let intervalId;
+function stopLive() {
+    clearInterval(intervalId); // Stop the interval using clearInterval
+}

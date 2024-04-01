@@ -223,10 +223,9 @@ return  data.length > 100 ? data.slice(0, 10) : data;
 
 let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
 
-
 async function fetchData(key:"list"): Promise<Coin[]>
 async function fetchData(key:string): Promise<CoinID>
-async function fetchData(key:string): Promise<CoinID|Coin[]> {
+async function fetchData(key:string): Promise<CoinID|Coin[]|secondeApi> {
   let res = await fetch(`https://api.coingecko.com/api/v3/coins/${key}`);
   let data = await res.json();
   return data;
@@ -364,13 +363,16 @@ function getDataFromLS(key:string): Coin[] | CoinID {
           case "Home":
             input.disabled = false;
             changes(aboutPage,liveReportsPage,homePage)
+         stopLive()
             break;
           case "About":
             input.disabled = true;
             changes(homePage,liveReportsPage,aboutPage)
+stopLive()
             break;
           case "Live Reports":
             input.disabled = true;
+            handleLive()
             changes(homePage,aboutPage,liveReportsPage)
             break;
         }
@@ -430,17 +432,34 @@ function saveChangesToggleObject() {
   } else {
     handleCards(data); 
   }
+
 }
 
 saveChanges.addEventListener("click",saveChangesToggleObject)
 
-let coinsIdToFetch = []
-function coinsToFetch(){
-for(const key in toggles){
-  if(toggles[key] === true){
-    let coinId = `${key},`
-    coinsIdToFetch.push(coinId)
-  }
-}
+
+async function fetchChosenCoins(coins:string){
+let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins},&tsyms=USD,EUR`)
 }
 
+function coinsToFetch(): string {
+  const chosenCoins: string[] = [];
+  for (const key in toggles) {
+    if (toggles[key] === true) {
+      chosenCoins.push(key);
+    }
+  }
+  return chosenCoins.join(',');
+}
+
+function handleLive() {
+  intervalId  = setInterval(async () => {
+  await  fetchChosenCoins(coinsToFetch())
+  console.log(fetchChosenCoins(coinsToFetch()));
+  }, 2000);
+}
+let intervalId: number 
+
+function stopLive() {
+  clearInterval(intervalId); // Stop the interval using clearInterval
+}
