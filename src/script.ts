@@ -1,4 +1,3 @@
-
 class Coin {
   id: string;
   symbol: string;
@@ -43,13 +42,16 @@ class CardElements {
   }
 }
 
-class secondeApi {
-  usd: number;
-  constructor(usd:number){
-    this.usd = usd
+
+class CoinData {
+  [key: string]: { usd: number };
+
+  constructor(data: { [key: string]: { usd: number } }) {
+    for (const key in data) {
+      this[key] = data[key];
+    }
   }
 }
-
 
 let data:Coin[]
 async function init() {
@@ -97,7 +99,7 @@ function handleCards(data: Coin[]) {
     getCardInfo(cardElements[i], data[i]);
     handleButtons(cardElements[i], data[i]);
 handleToggles(data[i],cardElements[i].toggle)  
-checking(cardElements[i].toggle,data[i].id)
+checking(cardElements[i].toggle,data[i].symbol)
 }
 }
 
@@ -105,9 +107,9 @@ checking(cardElements[i].toggle,data[i].id)
 
 function handleToggles( data:Coin,toggle:HTMLInputElement,){
   toggle.addEventListener("click", function () {
-  addToToggleObject(data.id)
+  addToToggleObject(data.symbol)
     if(checkedTogglesMoreThenFive()){
-      togglesState(toggle,data.id)
+      togglesState(toggle,data.symbol)
      showModal(modal,"block")
      
     }
@@ -132,7 +134,6 @@ function checkedTogglesMoreThenFive():boolean{
       checkedToggles++
     }
   }
-  console.log(checkedToggles)
   return checkedToggles === 6
 }
 
@@ -226,7 +227,7 @@ let cardContainer = document.querySelector("#cardContainer") as HTMLElement;
 
 async function fetchData(key:"list"): Promise<Coin[]>
 async function fetchData(key:string): Promise<CoinID>
-async function fetchData(key:string): Promise<CoinID|Coin[]|secondeApi> {
+async function fetchData(key:string): Promise<CoinID|Coin[]|CoinData> {
   let res = await fetch(`https://api.coingecko.com/api/v3/coins/${key}`);
   let data = await res.json();
   return data;
@@ -374,6 +375,7 @@ stopLive()
           case "Live Reports":
             input.disabled = true;
             handleLive()
+            getChart()
             changes(homePage,aboutPage,liveReportsPage)
             break;
         }
@@ -439,7 +441,7 @@ function saveChangesToggleObject() {
 saveChanges.addEventListener("click",saveChangesToggleObject)
 
 
-async function fetchChosenCoins(coins:string):Promise<secondeApi>{
+async function fetchChosenCoins(coins:string):Promise<CoinData>{
 let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins}&tsyms=USD,EUR`)
 let data = await res.json()
 return data
@@ -449,22 +451,65 @@ function coinsToFetch(): string {
   const chosenCoins: string[] = [];
   for (const key in toggles) {
     if (toggles[key] === true) {
-      chosenCoins.push(key);
+      chosenCoins.push(`${key},`);
     }
   } 
-  return chosenCoins.join(',').toString();
+  let chosenCoinString = chosenCoins.join(',');
+  return chosenCoinString;
 }
 
-
-function handleLive() {
-  intervalId  = setInterval(async () => {
-  console.log(await fetchChosenCoins(coinsToFetch()));
-  },  60 * 1000);
+let chartCoins:CoinData;
+async function handleLive() {
+  intervalId = setInterval(async () => {
+  chartCoins =  await fetchChosenCoins(coinsToFetch());
+  getChartData(chartCoins)
+  }, 1000);
 }
 let intervalId: number 
 
 function stopLive() {
   clearInterval(intervalId); 
 }
+ 
 
+function getChart(){
+  if (ctx) {
+    const myChart = new Chart(ctx, chartData);
+} 
+ }
 
+const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+
+    const ctx = canvas.getContext('2d');
+
+let chartData = {
+  data: {
+    datasets: [{
+        type: 'line',
+        label: 'Bar Dataset',
+        data: [10, 20, 30, 40]
+    }, {
+        type: 'line',
+        label: 'Line Dataset',
+        data: [50, 50, 50, 50],
+    }],
+    labels: ['January', 'February', 'March', 'April']
+},
+  options: {
+      scales: {
+          yAxes: [{
+              ticks: {
+                  beginAtZero: true
+              }
+          }]
+      }
+  }
+}
+
+function getChartData(chartCoins:CoinData){
+
+for (const key in chartCoins){
+  debugger
+console.log(chartCoins.data)
+  }
+}

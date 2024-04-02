@@ -31,9 +31,11 @@ class CardElements {
         this.toggle = toggle;
     }
 }
-class secondeApi {
-    constructor(usd) {
-        this.usd = usd;
+class CoinData {
+    constructor(data) {
+        for (const key in data) {
+            this[key] = data[key];
+        }
     }
 }
 let data;
@@ -76,14 +78,14 @@ function handleCards(data) {
         getCardInfo(cardElements[i], data[i]);
         handleButtons(cardElements[i], data[i]);
         handleToggles(data[i], cardElements[i].toggle);
-        checking(cardElements[i].toggle, data[i].id);
+        checking(cardElements[i].toggle, data[i].symbol);
     }
 }
 function handleToggles(data, toggle) {
     toggle.addEventListener("click", function () {
-        addToToggleObject(data.id);
+        addToToggleObject(data.symbol);
         if (checkedTogglesMoreThenFive()) {
-            togglesState(toggle, data.id);
+            togglesState(toggle, data.symbol);
             showModal(modal, "block");
         }
     });
@@ -103,7 +105,6 @@ function checkedTogglesMoreThenFive() {
             checkedToggles++;
         }
     }
-    console.log(checkedToggles);
     return checkedToggles === 6;
 }
 function addToToggleObject(key) {
@@ -287,6 +288,7 @@ function changePageContent() {
                 case "Live Reports":
                     input.disabled = true;
                     handleLive();
+                    getChart();
                     changes(homePage, aboutPage, liveReportsPage);
                     break;
             }
@@ -349,17 +351,58 @@ function coinsToFetch() {
     const chosenCoins = [];
     for (const key in toggles) {
         if (toggles[key] === true) {
-            chosenCoins.push(key);
+            chosenCoins.push(`${key},`);
         }
     }
-    return chosenCoins.join(',').toString();
+    let chosenCoinString = chosenCoins.join(',');
+    return chosenCoinString;
 }
+let chartCoins;
 function handleLive() {
-    intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
-        console.log(yield fetchChosenCoins(coinsToFetch()));
-    }), 60 * 1000);
+    return __awaiter(this, void 0, void 0, function* () {
+        intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
+            chartCoins = yield fetchChosenCoins(coinsToFetch());
+            getChartData(chartCoins);
+        }), 1000);
+    });
 }
 let intervalId;
 function stopLive() {
     clearInterval(intervalId);
+}
+function getChart() {
+    if (ctx) {
+        const myChart = new Chart(ctx, chartData);
+    }
+}
+const canvas = document.getElementById('myChart');
+const ctx = canvas.getContext('2d');
+let chartData = {
+    data: {
+        datasets: [{
+                type: 'line',
+                label: 'Bar Dataset',
+                data: [10, 20, 30, 40]
+            }, {
+                type: 'line',
+                label: 'Line Dataset',
+                data: [50, 50, 50, 50],
+            }],
+        labels: ['January', 'February', 'March', 'April']
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+        }
+    }
+};
+function getChartData(chartCoins) {
+    for (const key in chartCoins) {
+        debugger;
+        console.log(chartCoins.data);
+    }
 }
