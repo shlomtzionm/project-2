@@ -439,8 +439,10 @@ function saveChangesToggleObject() {
 saveChanges.addEventListener("click",saveChangesToggleObject)
 
 
-async function fetchChosenCoins(coins:string){
-let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins},&tsyms=USD,EUR`)
+async function fetchChosenCoins(coins:string):Promise<secondeApi>{
+let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins}&tsyms=USD,EUR`)
+let data = await res.json()
+return data
 }
 
 function coinsToFetch(): string {
@@ -457,10 +459,12 @@ function coinsToFetch(): string {
 function handleLive() {
   intervalId  = setInterval(async () => {
   console.log(await fetchChosenCoins(coinsToFetch()));
-  }, 2000);
+  },  60 * 1000);
 }
 let intervalId: number 
 
 function stopLive() {
   clearInterval(intervalId); 
 }
+
+

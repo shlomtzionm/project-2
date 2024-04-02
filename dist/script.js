@@ -340,7 +340,9 @@ function saveChangesToggleObject() {
 saveChanges.addEventListener("click", saveChangesToggleObject);
 function fetchChosenCoins(coins) {
     return __awaiter(this, void 0, void 0, function* () {
-        let res = yield fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins},&tsyms=USD,EUR`);
+        let res = yield fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins}&tsyms=USD,EUR`);
+        let data = yield res.json();
+        return data;
     });
 }
 function coinsToFetch() {
@@ -355,7 +357,7 @@ function coinsToFetch() {
 function handleLive() {
     intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
         console.log(yield fetchChosenCoins(coinsToFetch()));
-    }), 2000);
+    }), 60 * 1000);
 }
 let intervalId;
 function stopLive() {
