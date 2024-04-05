@@ -1,3 +1,4 @@
+document.addEventListener("DOMContentLoaded", function() {
 class Coin {
   id: string;
   symbol: string;
@@ -364,13 +365,15 @@ function getDataFromLS(key:string): Coin[] | CoinID {
         switch (btn.innerHTML) {
           case "Home":
             input.disabled = false;
+            exitLiveReports()
             changes(aboutPage,liveReportsPage,homePage)
-         exitLiveReports()
+
             break;
           case "About":
             input.disabled = true;
+            exitLiveReports()
             changes(homePage,liveReportsPage,aboutPage)
-exitLiveReports()
+
             break;
           case "Live Reports": 
           console.log(111)
@@ -470,20 +473,19 @@ let intervalId: number
 
 function exitLiveReports() {
   clearInterval(intervalId); 
-  liveReportsPage.innerHTML=""
 }
  
 
+
+const canvasContainer = document.querySelector('#canvasContainer') as HTMLElement;
+
 function getChart(){
-  if(myChart)
-  if (ctx) {
-    const myChart = new Chart(ctx, chartData);
-} 
- }
-
-const canvas = document.getElementById('myChart') as HTMLCanvasElement;
-
+  if (canvasContainer.innerHTML === ""){
+    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`
+    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
     const ctx = canvas;
+    const myChart = new Chart(ctx, chartData);}
+ }
 
 let chartData = {
   data: {
@@ -516,3 +518,6 @@ for (const key in chartCoins){
 console.log(chartCoins.data)
   }
 }
+
+
+})
