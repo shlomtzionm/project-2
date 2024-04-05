@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function() {
+
 class Coin {
   id: string;
   symbol: string;
@@ -45,14 +45,15 @@ class CardElements {
 
 
 class CoinData {
-  [key: string]: { usd: number };
+  [data:string]: { [key:string]: {USD: number} };
 
-  constructor(data: { [key: string]: { usd: number } }) {
-    for (const key in data) {
-      this[key] = data[key];
-    }
+  constructor(data: { [key: string]: {USD: number} }) {
+    this.data = data;
   }
 }
+
+
+
 
 let data:Coin[]
 async function init() {
@@ -380,6 +381,7 @@ function getDataFromLS(key:string): Coin[] | CoinID {
             input.disabled = true;
             handleLive()
             getChart()
+
             changes(homePage,aboutPage,liveReportsPage)
             break;
         }
@@ -446,7 +448,7 @@ saveChanges.addEventListener("click",saveChangesToggleObject)
 
 
 async function fetchChosenCoins(coins:string):Promise<CoinData>{
-let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins}&tsyms=USD,EUR`)
+let res = await fetch(`https://min-api.cryptocompare.com/data/pricemulti?fsyms=${coins}&tsyms=USD`)
 let data = await res.json()
 return data
 }
@@ -467,7 +469,8 @@ async function handleLive() {
   intervalId = setInterval(async () => {
   chartCoins =  await fetchChosenCoins(coinsToFetch());
   getChartData(chartCoins)
-  }, 1000);
+  let liveDataArray = []
+  },3000);
 }
 let intervalId: number 
 
@@ -511,13 +514,11 @@ let chartData = {
   }
 }
 
-function getChartData(chartCoins:CoinData){
-
-for (const key in chartCoins){
-
-console.log(chartCoins.data)
-  }
+function getChartData(chartCoins: CoinData) {
+  for (const key in chartCoins){
+    console.log(chartCoins[key].USD)
+    debugger
+ }
 }
 
 
-})
