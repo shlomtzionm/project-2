@@ -278,14 +278,15 @@ function changePageContent() {
                 case "Home":
                     input.disabled = false;
                     changes(aboutPage, liveReportsPage, homePage);
-                    stopLive();
+                    exitLiveReports();
                     break;
                 case "About":
                     input.disabled = true;
                     changes(homePage, liveReportsPage, aboutPage);
-                    stopLive();
+                    exitLiveReports();
                     break;
                 case "Live Reports":
+                    console.log(111);
                     input.disabled = true;
                     handleLive();
                     getChart();
@@ -367,8 +368,9 @@ function handleLive() {
     });
 }
 let intervalId;
-function stopLive() {
+function exitLiveReports() {
     clearInterval(intervalId);
+    liveReportsPage.innerHTML = "";
 }
 function getChart() {
     if (ctx) {
@@ -376,7 +378,7 @@ function getChart() {
     }
 }
 const canvas = document.getElementById('myChart');
-const ctx = canvas.getContext('2d');
+const ctx = canvas;
 let chartData = {
     data: {
         datasets: [{
@@ -402,7 +404,6 @@ let chartData = {
 };
 function getChartData(chartCoins) {
     for (const key in chartCoins) {
-        debugger;
         console.log(chartCoins.data);
     }
 }

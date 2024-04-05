@@ -365,14 +365,15 @@ function getDataFromLS(key:string): Coin[] | CoinID {
           case "Home":
             input.disabled = false;
             changes(aboutPage,liveReportsPage,homePage)
-         stopLive()
+         exitLiveReports()
             break;
           case "About":
             input.disabled = true;
             changes(homePage,liveReportsPage,aboutPage)
-stopLive()
+exitLiveReports()
             break;
-          case "Live Reports":
+          case "Live Reports": 
+          console.log(111)
             input.disabled = true;
             handleLive()
             getChart()
@@ -467,12 +468,14 @@ async function handleLive() {
 }
 let intervalId: number 
 
-function stopLive() {
+function exitLiveReports() {
   clearInterval(intervalId); 
+  liveReportsPage.innerHTML=""
 }
  
 
 function getChart(){
+  if(myChart)
   if (ctx) {
     const myChart = new Chart(ctx, chartData);
 } 
@@ -480,7 +483,7 @@ function getChart(){
 
 const canvas = document.getElementById('myChart') as HTMLCanvasElement;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas;
 
 let chartData = {
   data: {
@@ -509,7 +512,7 @@ let chartData = {
 function getChartData(chartCoins:CoinData){
 
 for (const key in chartCoins){
-  debugger
+
 console.log(chartCoins.data)
   }
 }
