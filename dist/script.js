@@ -43,6 +43,12 @@ class CoinCurrencyObject {
         this.type = type;
     }
 }
+class ChartConfig {
+    constructor(datasets, labels, options) {
+        this.data = { datasets, labels };
+        this.options = options;
+    }
+}
 let data;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -364,6 +370,9 @@ function coinsToFetch() {
 let chartCoins;
 function handleLive() {
     return __awaiter(this, void 0, void 0, function* () {
+        chosenCoinsArray = [];
+        timeLabels = [];
+        canvasContainer.innerHTML = "";
         intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             chartCoins = yield fetchChosenCoins(coinsToFetch());
             pushToChosenArray(chartCoins);
@@ -379,11 +388,14 @@ function exitLiveReports() {
 function pushToChosenArray(chartCoins) {
     chosenCoinsArray = [];
     for (const key in chartCoins) {
-        console.log(chartCoins[key].USD);
-        chosenCoinsArray.push(new CoinCurrencyObject("line", key, [10]));
-        console.log(chosenCoinsArray);
+        if (!usdValues[key]) {
+            usdValues[key] = [];
+        }
+        getCoinValuePerSeconde(+chartCoins[key].USD, key);
+        chosenCoinsArray.push(new CoinCurrencyObject("line", key, usdValues[key]));
     }
 }
+let usdValues = {};
 let chosenCoinsArray = [];
 const canvasContainer = document.querySelector('#canvasContainer');
 let timeLabels = [];
@@ -404,14 +416,27 @@ function updateChartDate() {
             },
         },
     };
-    redrawChart(chartData);
+    updateChart(chartData);
 }
-function redrawChart(chartData) {
+function updateChart(chartData) {
+    if (canvasContainer.innerHTML === "") {
+        createChart(chartData);
+    }
+    else {
+        myChart.update();
+    }
+}
+let myChart;
+function createChart(chartData) {
     canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
     const canvas = document.getElementById('myChart');
     const ctx = canvas;
-    const myChart = new Chart(ctx, chartData);
+    myChart = new Chart(ctx, chartData);
 }
 function getTimeForChart() {
     return (moment().format("h:mm:ss"));
+}
+function getCoinValuePerSeconde(value, key) {
+    usdValues[key].push(value);
+    console.log(usdValues);
 }

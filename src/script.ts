@@ -66,6 +66,24 @@ this.type = type;
   }
 }
 
+class ChartConfig {
+  data: { datasets: CoinCurrencyObject[]; labels: string[] };
+  options: { scales: { y: { title: { display: boolean; text: "value" } } } };
+
+  constructor(datasets: CoinCurrencyObject[], labels: string[]) {
+    this.data = { datasets, labels };
+    this.options = {
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: "value"
+          }
+        }
+      }
+    };
+  }
+}
 
 let data:Coin[]
 async function init() {
@@ -478,10 +496,14 @@ function coinsToFetch(): string {
 
 let chartCoins:CoinData;
 async function handleLive() {
+  chosenCoinsArray = []
+  timeLabels = []
+canvasContainer.innerHTML =""
   intervalId = setInterval(async () => {
   chartCoins =  await fetchChosenCoins(coinsToFetch());
+
   pushToChosenArray(chartCoins)
- timeLabels.push( getTimeForChart())
+  timeLabels.push( getTimeForChart())
   updateChartDate()
   },3000);
 }
@@ -489,17 +511,22 @@ let intervalId: number
 
 function exitLiveReports() {
   clearInterval(intervalId); 
+
 }
 
-function pushToChosenArray (chartCoins: CoinData){
-  chosenCoinsArray = []
-  for (const key in chartCoins){
-    console.log(chartCoins[key].USD)
- chosenCoinsArray.push(new CoinCurrencyObject("line",key,[10]))
- console.log(chosenCoinsArray)
-}}
+function pushToChosenArray(chartCoins: CoinData) {
+  chosenCoinsArray = [];
 
+  for (const key in chartCoins) {
+    if (!usdValues[key]) {
+      usdValues[key] = [];
+    }
+    getCoinValuePerSeconde(+chartCoins[key].USD, key);
+    chosenCoinsArray.push(new CoinCurrencyObject("line", key, usdValues[key]));
+  }
+}
 
+let usdValues:{[key:string]:number[]}= {}
 let chosenCoinsArray: CoinCurrencyObject[] = []
 const canvasContainer = document.querySelector('#canvasContainer') as HTMLElement
 
@@ -509,7 +536,7 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
 
  let timeLabels:string[] = []
  function updateChartDate(){
-  let chartData = {
+  let chartData:ChartConfig = {
     data: {
       datasets: chosenCoinsArray,
     labels: timeLabels
@@ -518,7 +545,6 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
       scales: {
       
         y: {
-          
           title: {
             display: true,
             text: 'value'
@@ -527,18 +553,35 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
       },
     },
     }
-  redrawChart(chartData);
+    updateChart(chartData)
 }
 
+function updateChart(chartData: ChartConfig) {
+  if (canvasContainer.innerHTML === "") {
+    createChart(chartData);
+  } 
+  else {
+    myChart.update();
+  }
+}
 
-function redrawChart(chartData:any){
+let myChart: Chart;
 
-    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`
-    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
-    const ctx = canvas;
-    const myChart = new Chart(ctx, chartData);}
-
+function createChart(chartData: ChartConfig) {
+  canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
+  const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+  const ctx = canvas;
+  myChart = new Chart(ctx, chartData);
+  
+}
 
   function getTimeForChart():string{
 return  ( moment().format("h:mm:ss"));
   }
+
+  function getCoinValuePerSeconde(value: number,key:string){
+  usdValues[key].push(value)
+  console.log(usdValues)
+  }
+
+  
