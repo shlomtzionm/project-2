@@ -36,6 +36,13 @@ class CoinData {
         this.data = data;
     }
 }
+class CoinCurrencyObject {
+    constructor(type, label, data) {
+        this.data = data;
+        this.label = label;
+        this.type = type;
+    }
+}
 let data;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -284,10 +291,8 @@ function changePageContent() {
                     changes(homePage, liveReportsPage, aboutPage);
                     break;
                 case "Live Reports":
-                    console.log(111);
                     input.disabled = true;
                     handleLive();
-                    getChart();
                     changes(homePage, aboutPage, liveReportsPage);
                     break;
             }
@@ -361,8 +366,9 @@ function handleLive() {
     return __awaiter(this, void 0, void 0, function* () {
         intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             chartCoins = yield fetchChosenCoins(coinsToFetch());
-            getChartData(chartCoins);
-            let liveDataArray = [];
+            pushToChosenArray(chartCoins);
+            timeLabels.push(getTimeForChart());
+            updateChartDate();
         }), 3000);
     });
 }
@@ -370,41 +376,42 @@ let intervalId;
 function exitLiveReports() {
     clearInterval(intervalId);
 }
-const canvasContainer = document.querySelector('#canvasContainer');
-function getChart() {
-    if (canvasContainer.innerHTML === "") {
-        canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
-        const canvas = document.getElementById('myChart');
-        const ctx = canvas;
-        const myChart = new Chart(ctx, chartData);
-    }
-}
-let chartData = {
-    data: {
-        datasets: [{
-                type: 'line',
-                label: 'Bar Dataset',
-                data: [10, 20, 30, 40]
-            }, {
-                type: 'line',
-                label: 'Line Dataset',
-                data: [50, 50, 50, 50],
-            }],
-        labels: ['January', 'February', 'March', 'April']
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-        }
-    }
-};
-function getChartData(chartCoins) {
+function pushToChosenArray(chartCoins) {
+    chosenCoinsArray = [];
     for (const key in chartCoins) {
         console.log(chartCoins[key].USD);
-        debugger;
+        chosenCoinsArray.push(new CoinCurrencyObject("line", key, [10]));
+        console.log(chosenCoinsArray);
     }
+}
+let chosenCoinsArray = [];
+const canvasContainer = document.querySelector('#canvasContainer');
+let timeLabels = [];
+function updateChartDate() {
+    let chartData = {
+        data: {
+            datasets: chosenCoinsArray,
+            labels: timeLabels
+        },
+        options: {
+            scales: {
+                y: {
+                    title: {
+                        display: true,
+                        text: 'value'
+                    }
+                }
+            },
+        },
+    };
+    redrawChart(chartData);
+}
+function redrawChart(chartData) {
+    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
+    const canvas = document.getElementById('myChart');
+    const ctx = canvas;
+    const myChart = new Chart(ctx, chartData);
+}
+function getTimeForChart() {
+    return (moment().format("h:mm:ss"));
 }

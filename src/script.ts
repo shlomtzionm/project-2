@@ -52,7 +52,19 @@ class CoinData {
   }
 }
 
-
+class CoinCurrencyObject{
+  type :string;
+  label: string;
+  data: number[]
+  constructor(type :string,
+    label: string,
+    data: number[]
+    ){
+this.data = data;
+this.label = label;
+this.type = type;
+  }
+}
 
 
 let data:Coin[]
@@ -377,10 +389,10 @@ function getDataFromLS(key:string): Coin[] | CoinID {
 
             break;
           case "Live Reports": 
-          console.log(111)
             input.disabled = true;
+          
             handleLive()
-            getChart()
+        
 
             changes(homePage,aboutPage,liveReportsPage)
             break;
@@ -468,8 +480,9 @@ let chartCoins:CoinData;
 async function handleLive() {
   intervalId = setInterval(async () => {
   chartCoins =  await fetchChosenCoins(coinsToFetch());
-  getChartData(chartCoins)
-  let liveDataArray = []
+  pushToChosenArray(chartCoins)
+ timeLabels.push( getTimeForChart())
+  updateChartDate()
   },3000);
 }
 let intervalId: number 
@@ -477,48 +490,55 @@ let intervalId: number
 function exitLiveReports() {
   clearInterval(intervalId); 
 }
- 
+
+function pushToChosenArray (chartCoins: CoinData){
+  chosenCoinsArray = []
+  for (const key in chartCoins){
+    console.log(chartCoins[key].USD)
+ chosenCoinsArray.push(new CoinCurrencyObject("line",key,[10]))
+ console.log(chosenCoinsArray)
+}}
 
 
-const canvasContainer = document.querySelector('#canvasContainer') as HTMLElement;
+let chosenCoinsArray: CoinCurrencyObject[] = []
+const canvasContainer = document.querySelector('#canvasContainer') as HTMLElement
 
-function getChart(){
-  if (canvasContainer.innerHTML === ""){
+
+
+
+
+ let timeLabels:string[] = []
+ function updateChartDate(){
+  let chartData = {
+    data: {
+      datasets: chosenCoinsArray,
+    labels: timeLabels
+    },
+    options: {
+      scales: {
+      
+        y: {
+          
+          title: {
+            display: true,
+            text: 'value'
+          }
+        }
+      },
+    },
+    }
+  redrawChart(chartData);
+}
+
+
+function redrawChart(chartData:any){
+
     canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`
     const canvas = document.getElementById('myChart') as HTMLCanvasElement;
     const ctx = canvas;
     const myChart = new Chart(ctx, chartData);}
- }
 
-let chartData = {
-  data: {
-    datasets: [{
-        type: 'line',
-        label: 'Bar Dataset',
-        data: [10, 20, 30, 40]
-    }, {
-        type: 'line',
-        label: 'Line Dataset',
-        data: [50, 50, 50, 50],
-    }],
-    labels: ['January', 'February', 'March', 'April']
-},
-  options: {
-      scales: {
-          yAxes: [{
-              ticks: {
-                  beginAtZero: true
-              }
-          }]
-      }
+
+  function getTimeForChart():string{
+return  ( moment().format("h:mm:ss"));
   }
-}
-
-function getChartData(chartCoins: CoinData) {
-  for (const key in chartCoins){
-    console.log(chartCoins[key].USD)
-    debugger
- }
-}
-
-
