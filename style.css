@@ -1,19 +1,19 @@
 body {
-    background-image: url(back-ground.jpg);
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    overflow-x: hidden;
+    background-image: url(https://img.freepik.com/free-photo/white-blank-background-texture-design-element_53876-121611.jpg?w=996&t=st=1712680944~exp=1712681544~hmac=246cb83be05ef84a776a6076d26344574178258ca43bd528703add29581711c1);
 }
 
 #navBar {
     border-bottom: 1px solid black;
     display: flex;
-    height: 50px;
+    height: 55px;
     justify-content: space-between;
     width: 100%;
     flex-direction: row-reverse;
+    background-color: #586d58; /* Example background color */
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
+    top: 0;
+    z-index: 1000; /* Ensure it's above other content */
 }
 
 .header {
@@ -21,7 +21,8 @@ body {
     height: 50px;
     width: 100px;
     align-items: center;
-    margin-left: 15px;
+    margin-left: 55px;
+
 }
 
 #coinImage {
@@ -31,7 +32,7 @@ body {
 }
 
 #cardContainer {
-    margin: 35px auto;
+    margin: 100px auto;
     display: flex;
     flex-wrap: wrap;
     align-content: center;
@@ -90,8 +91,7 @@ body {
 }
 
 .myCard {
-
-    background-color: #41a94170;
+    background-color: #A6D7A6;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -120,7 +120,7 @@ body {
 .btn,
 .saveChanges,
 .UndoChanges {
-    background-color: #00ff08;
+    background-color: #7ABB9F;
     color: #ffffff;
     border: none;
     border-radius: 4px;
@@ -131,7 +131,7 @@ body {
 .btn:hover ,
 .saveChanges:hover,
 .UndoChanges:hover{
-    background-color: #0a870e;
+    background-color: #427e77;
 }
 
 #about, #liveReports {
@@ -157,7 +157,7 @@ body {
 }
 
 #aboutInfo {
-    background-color: #41a94170;
+    background-color: #A6D7A6;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 300px;
@@ -191,7 +191,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #cccccc;
+    background-color: #979797;
     transition: .4s;
 }
 
@@ -207,7 +207,7 @@ body {
 }
 
 input:checked + .slider {
-    background-color: #828282;
+    background-color: #383838;
 }
 
 input:checked + .slider:before {
@@ -232,8 +232,29 @@ input:checked + .slider:before {
     display: none;
 }
 
+.welcome{
+    background-color: white;
+    color: #000000;
+   
+    text-align: center;
+    margin-top: 100px;
+}
+
+.parallax {
+    /* Your existing parallax styles */
+    /* Add additional styles to control the scrolling speed */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* background-size: cover; */
+    background-size: 180%;  
+}
+
 /* Media Queries */
 @media only screen and (max-width: 600px) {
+    .welcome{
+        display: none;
+    }
     .search {
         display: flex;
         flex-direction: column;
@@ -242,8 +263,9 @@ input:checked + .slider:before {
 
     #navBar {
         flex-direction: column-reverse;
-        height: 150px;
-        margin-top: 100px;
+        height: 250px;
+        margin-top: 25px;
+        color: black;
     }
 
     .tabs {
@@ -263,11 +285,12 @@ input:checked + .slider:before {
 }
 
 @media only screen and (min-width: 601px) and (max-width: 900px) {
-  
+    .welcome{
+        display: none;
+    }
     #navBar {
         flex-direction: column-reverse;
         height: 150px;
-    
     }
 
     .tabs {
@@ -278,13 +301,11 @@ input:checked + .slider:before {
         display: flex;
         flex-direction: row;
         align-items: flex-start;
-        
     }
     #cardContainer{
         width: 100%;
     }
 }
-
 
 /* The Modal (background) */
 .modal {
@@ -298,28 +319,36 @@ input:checked + .slider:before {
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  /* Modal Content/Box */
-  .modal-content {
+}
+
+/* Modal Content/Box */
+.modal-content {
     background-color: #fefefe;
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 80%; /* Could be more or less, depending on screen size */
-  }
-  
-  
-  #myModal {
-    z-index: 1000; /* Adjust as needed */
-  }
+}
 
-  .modalToggle{
+#myModal {
+    z-index: 1000; /* Adjust as needed */
+}
+
+.modalToggle{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between
-  }
-  .saveChanges,
-  .UndoChanges{
+}
+
+.saveChanges,
+.UndoChanges{
     margin-bottom: 10px;
-  }
+}
+
+@media only screen and (max-device-width: 1366px) {
+    .parallax {
+        background-attachment: scroll;
+    }
+}
+
+

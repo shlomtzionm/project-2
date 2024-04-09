@@ -37,16 +37,10 @@ class CoinData {
     }
 }
 class CoinCurrencyObject {
-    constructor(type, label, data) {
-        this.data = data;
+    constructor(label, data) {
+        this.type = 'line';
         this.label = label;
-        this.type = type;
-    }
-}
-class ChartConfig {
-    constructor(datasets, labels, options) {
-        this.data = { datasets, labels };
-        this.options = options;
+        this.data = data;
     }
 }
 let data;
@@ -392,7 +386,7 @@ function pushToChosenArray(chartCoins) {
             usdValues[key] = [];
         }
         getCoinValuePerSeconde(+chartCoins[key].USD, key);
-        chosenCoinsArray.push(new CoinCurrencyObject("line", key, usdValues[key]));
+        chosenCoinsArray.push(new CoinCurrencyObject(key, (usdValues[key])));
     }
 }
 let usdValues = {};
@@ -406,15 +400,9 @@ function updateChartDate() {
             labels: timeLabels
         },
         options: {
-            scales: {
-                y: {
-                    title: {
-                        display: true,
-                        text: 'value'
-                    }
-                }
-            },
+            scales: {},
         },
+        type: 'bar'
     };
     updateChart(chartData);
 }
@@ -440,3 +428,10 @@ function getCoinValuePerSeconde(value, key) {
     usdValues[key].push(value);
     console.log(usdValues);
 }
+let welcomeSection = document.querySelector('.welcome');
+window.addEventListener('scroll', () => {
+    const navbarHeight = document.getElementById('navBar');
+    const navPosition = navbarHeight.offsetTop + navbarHeight.offsetHeight;
+    const scrollPosition = window.scrollY;
+    welcomeSection.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
+});

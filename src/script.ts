@@ -52,38 +52,19 @@ class CoinData {
   }
 }
 
-class CoinCurrencyObject{
-  type :string;
+class CoinCurrencyObject {
+  type: 'line';
   label: string;
-  data: number[]
-  constructor(type :string,
-    label: string,
-    data: number[]
-    ){
-this.data = data;
-this.label = label;
-this.type = type;
+  data: number[];
+  
+  constructor(label: string, data: number[]) {
+    this.type = 'line';
+    this.label = label;
+    this.data = data;
   }
 }
 
-class ChartConfig {
-  data: { datasets: CoinCurrencyObject[]; labels: string[] };
-  options: { scales: { y: { title: { display: boolean; text: "value" } } } };
 
-  constructor(datasets: CoinCurrencyObject[], labels: string[]) {
-    this.data = { datasets, labels };
-    this.options = {
-      scales: {
-        y: {
-          title: {
-            display: true,
-            text: "value"
-          }
-        }
-      }
-    };
-  }
-}
 
 let data:Coin[]
 async function init() {
@@ -522,7 +503,7 @@ function pushToChosenArray(chartCoins: CoinData) {
       usdValues[key] = [];
     }
     getCoinValuePerSeconde(+chartCoins[key].USD, key);
-    chosenCoinsArray.push(new CoinCurrencyObject("line", key, usdValues[key]));
+    chosenCoinsArray.push(new CoinCurrencyObject( key, (usdValues[key])));
   }
 }
 
@@ -531,32 +512,23 @@ let chosenCoinsArray: CoinCurrencyObject[] = []
 const canvasContainer = document.querySelector('#canvasContainer') as HTMLElement
 
 
-
-
-
  let timeLabels:string[] = []
+
  function updateChartDate(){
-  let chartData:ChartConfig = {
+  let chartData :Chart.ChartConfiguration= {
     data: {
       datasets: chosenCoinsArray,
-    labels: timeLabels
+      labels: timeLabels
     },
     options: {
       scales: {
-      
-        y: {
-          title: {
-            display: true,
-            text: 'value'
-          }
-        }
+    
       },
     },
-    }
+    type: 'bar'
+  }
     updateChart(chartData)
-}
-
-function updateChart(chartData: ChartConfig) {
+}function updateChart(chartData:Chart.ChartConfiguration) {
   if (canvasContainer.innerHTML === "") {
     createChart(chartData);
   } 
@@ -567,7 +539,7 @@ function updateChart(chartData: ChartConfig) {
 
 let myChart: Chart;
 
-function createChart(chartData: ChartConfig) {
+function createChart(chartData:Chart.ChartConfiguration) {
   canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
   const canvas = document.getElementById('myChart') as HTMLCanvasElement;
   const ctx = canvas;
@@ -584,4 +556,15 @@ return  ( moment().format("h:mm:ss"));
   console.log(usdValues)
   }
 
+  let welcomeSection = document.querySelector('.welcome') as HTMLElement;
+
+  window.addEventListener('scroll', () => {
+      
+      const navbarHeight = document.getElementById('navBar') as HTMLElement;
+      const navPosition = navbarHeight.offsetTop + navbarHeight.offsetHeight;
+
+      const scrollPosition = window.scrollY;
+      welcomeSection.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
+  });
   
+
