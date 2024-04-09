@@ -404,9 +404,9 @@ function updateChartDate() {
         },
         type: 'bar'
     };
-    updateChart(chartData);
+    updateChartOrCreate(chartData);
 }
-function updateChart(chartData) {
+function updateChartOrCreate(chartData) {
     if (canvasContainer.innerHTML === "") {
         createChart(chartData);
     }

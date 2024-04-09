@@ -9,7 +9,7 @@ body {
     justify-content: space-between;
     width: 100%;
     flex-direction: row-reverse;
-    background-color: #586d58; /* Example background color */
+    background-color: #557456; /* Example background color */
     position: -webkit-sticky; /* For Safari */
     position: sticky;
     top: 0;
@@ -120,7 +120,7 @@ body {
 .btn,
 .saveChanges,
 .UndoChanges {
-    background-color: #7ABB9F;
+    background-color: #809d81;
     color: #ffffff;
     border: none;
     border-radius: 4px;
@@ -131,7 +131,7 @@ body {
 .btn:hover ,
 .saveChanges:hover,
 .UndoChanges:hover{
-    background-color: #427e77;
+    background-color: #8fb4a5;
 }
 
 #about, #liveReports {
@@ -327,7 +327,7 @@ input:checked + .slider:before {
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 40%; /* Could be more or less, depending on screen size */
 }
 
 #myModal {

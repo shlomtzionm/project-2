@@ -1,4 +1,3 @@
-
 class Coin {
   id: string;
   symbol: string;
@@ -527,8 +526,10 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
     },
     type: 'bar'
   }
-    updateChart(chartData)
-}function updateChart(chartData:Chart.ChartConfiguration) {
+  updateChartOrCreate(chartData)
+}
+
+function updateChartOrCreate(chartData:any) {
   if (canvasContainer.innerHTML === "") {
     createChart(chartData);
   } 
@@ -539,11 +540,11 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
 
 let myChart: Chart;
 
-function createChart(chartData:Chart.ChartConfiguration) {
+function createChart(chartData:any) {
   canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
   const canvas = document.getElementById('myChart') as HTMLCanvasElement;
   const ctx = canvas;
-  myChart = new Chart(ctx, chartData);
+ myChart = new Chart(ctx, chartData)
   
 }
 
