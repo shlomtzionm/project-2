@@ -91,7 +91,7 @@ body {
 }
 
 .myCard {
-    background-color: #9dcc9d88;
+    background-color: #b2d0b2;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -140,8 +140,8 @@ body {
 
 #myPic {
     display: block;
-    width: 350px;
-    height: 350px;
+    width: 300px;
+    height: 300px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -157,7 +157,7 @@ body {
 }
 
 #aboutInfo {
-    background-color: #A6D7A6;
+    background-color: #81a281;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 300px;
@@ -327,7 +327,7 @@ input:checked + .slider:before {
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 40%; /* Could be more or less, depending on screen size */
+    width: 100%; /* Could be more or less, depending on screen size */
 }
 
 #myModal {
