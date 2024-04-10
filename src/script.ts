@@ -560,10 +560,6 @@ return  ( moment().format("h:mm:ss"));
   let welcomeSection = document.querySelector('.welcome') as HTMLElement;
 
   window.addEventListener('scroll', () => {
-      
-      const navbarHeight = document.getElementById('navBar') as HTMLElement;
-      const navPosition = navbarHeight.offsetTop + navbarHeight.offsetHeight;
-
       const scrollPosition = window.scrollY;
       welcomeSection.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
   });

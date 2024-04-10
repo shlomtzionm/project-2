@@ -430,8 +430,6 @@ function getCoinValuePerSeconde(value, key) {
 }
 let welcomeSection = document.querySelector('.welcome');
 window.addEventListener('scroll', () => {
-    const navbarHeight = document.getElementById('navBar');
-    const navPosition = navbarHeight.offsetTop + navbarHeight.offsetHeight;
     const scrollPosition = window.scrollY;
     welcomeSection.style.transform = 'translateY(' + scrollPosition * 0.5 + 'px)';
 });
