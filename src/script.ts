@@ -46,6 +46,7 @@ class CardElements {
 class CoinData {
   [data:string]: { [key:string]: {USD: number} };
 
+
   constructor(data: { [key: string]: {USD: number} }) {
     this.data = data;
   }
@@ -121,7 +122,7 @@ function handleToggles( data:Coin,toggle:HTMLInputElement,){
   toggle.addEventListener("click", function () {
   addToToggleObject(data.symbol)
     if(checkedTogglesMoreThenFive()){
-      togglesState(toggle,data.symbol)
+      changeDefaultState(toggle,data.symbol)
      showModal(modal,"block")
      
     }
@@ -149,19 +150,25 @@ function checkedTogglesMoreThenFive():boolean{
   return checkedToggles === 6
 }
 
-
+function areTogglesChecked() {
+  for (const key in toggles) {
+    if (toggles[key] === true) {
+      return true;
+    }
+  }
+  return false; 
+}
 
 function addToToggleObject(key: string) {
   toggles[key] = !toggles[key];
 }
 
-function togglesState( toggle:HTMLInputElement,key:string) {
+function changeDefaultState( toggle:HTMLInputElement,key:string) {
     toggle.checked = false
     toggles[key] = false
 }
 
-function handleButtons(cardElements:CardElements
-  ,data:Coin){
+function handleButtons(cardElements:CardElements,data:Coin){
   cardElements.button.addEventListener("click",() => {
     showSpinner(cardElements.spinner)
       buttonMoreInfo(cardElements, data)
@@ -388,11 +395,17 @@ function getDataFromLS(key:string): Coin[] | CoinID {
             break;
           case "Live Reports": 
             input.disabled = true;
-          
-            handleLive()
+            if ( areTogglesChecked()){
+              changes(homePage,aboutPage,liveReportsPage)
+              handleLive()
+            } else {
+alert("please choose some coins")
+            }
+           
+           
         
 
-            changes(homePage,aboutPage,liveReportsPage)
+           
             break;
         }
       });
@@ -474,17 +487,14 @@ function coinsToFetch(): string {
   return chosenCoinString;
 }
 
-let chartCoins:CoinData;
+let chartCoins:CoinData ;
 async function handleLive() {
-  chosenCoinsArray = []
-  timeLabels = []
-canvasContainer.innerHTML =""
+  resetChartData()
   intervalId = setInterval(async () => {
   chartCoins =  await fetchChosenCoins(coinsToFetch());
-
   pushToChosenArray(chartCoins)
   timeLabels.push( getTimeForChart())
-  updateChartDate()
+  updateChartOrCreate()
   },3000);
 }
 let intervalId: number 
@@ -493,6 +503,17 @@ function exitLiveReports() {
   clearInterval(intervalId); 
 
 }
+
+function HandelInterval(){
+  
+}
+
+function resetChartData(){
+  chosenCoinsArray = []
+  timeLabels = []
+canvasContainer.innerHTML =""
+}
+
 
 function pushToChosenArray(chartCoins: CoinData) {
   chosenCoinsArray = [];
@@ -513,38 +534,33 @@ const canvasContainer = document.querySelector('#canvasContainer') as HTMLElemen
 
  let timeLabels:string[] = []
 
- function updateChartDate(){
-  let chartData :Chart.ChartConfiguration= {
-    data: {
-      datasets: chosenCoinsArray,
-      labels: timeLabels
-    },
-    options: {
-      scales: {
-    
-      },
-    },
-    type: 'bar'
-  }
-  updateChartOrCreate(chartData)
-}
+ 
 
-function updateChartOrCreate(chartData:any) {
+function updateChartOrCreate() {
   if (canvasContainer.innerHTML === "") {
-    createChart(chartData);
+    createChart();
   } 
-  else {
-    myChart.update();
-  }
+ myChart.update()
 }
 
 let myChart: Chart;
 
-function createChart(chartData:any) {
+function createChart() {
   canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
   const canvas = document.getElementById('myChart') as HTMLCanvasElement;
   const ctx = canvas;
- myChart = new Chart(ctx, chartData)
+ myChart = new Chart(ctx, {
+  data: {
+    datasets: chosenCoinsArray,
+    labels: timeLabels
+  },
+  options: {
+    scales: {
+  
+    },
+  },
+  type: 'bar'
+})
   
 }
 
@@ -554,7 +570,6 @@ return  ( moment().format("h:mm:ss"));
 
   function getCoinValuePerSeconde(value: number,key:string){
   usdValues[key].push(value)
-  console.log(usdValues)
   }
 
   let welcomeSection = document.querySelector('.welcome') as HTMLElement;

@@ -90,7 +90,7 @@ function handleToggles(data, toggle) {
     toggle.addEventListener("click", function () {
         addToToggleObject(data.symbol);
         if (checkedTogglesMoreThenFive()) {
-            togglesState(toggle, data.symbol);
+            changeDefaultState(toggle, data.symbol);
             showModal(modal, "block");
         }
     });
@@ -112,10 +112,18 @@ function checkedTogglesMoreThenFive() {
     }
     return checkedToggles === 6;
 }
+function areTogglesChecked() {
+    for (const key in toggles) {
+        if (toggles[key] === true) {
+            return true;
+        }
+    }
+    return false;
+}
 function addToToggleObject(key) {
     toggles[key] = !toggles[key];
 }
-function togglesState(toggle, key) {
+function changeDefaultState(toggle, key) {
     toggle.checked = false;
     toggles[key] = false;
 }
@@ -292,8 +300,13 @@ function changePageContent() {
                     break;
                 case "Live Reports":
                     input.disabled = true;
-                    handleLive();
-                    changes(homePage, aboutPage, liveReportsPage);
+                    if (areTogglesChecked()) {
+                        changes(homePage, aboutPage, liveReportsPage);
+                        handleLive();
+                    }
+                    else {
+                        alert("please choose some coins");
+                    }
                     break;
             }
         });
@@ -364,20 +377,25 @@ function coinsToFetch() {
 let chartCoins;
 function handleLive() {
     return __awaiter(this, void 0, void 0, function* () {
-        chosenCoinsArray = [];
-        timeLabels = [];
-        canvasContainer.innerHTML = "";
+        resetChartData();
         intervalId = setInterval(() => __awaiter(this, void 0, void 0, function* () {
             chartCoins = yield fetchChosenCoins(coinsToFetch());
             pushToChosenArray(chartCoins);
             timeLabels.push(getTimeForChart());
-            updateChartDate();
+            updateChartOrCreate();
         }), 3000);
     });
 }
 let intervalId;
 function exitLiveReports() {
     clearInterval(intervalId);
+}
+function HandelInterval() {
+}
+function resetChartData() {
+    chosenCoinsArray = [];
+    timeLabels = [];
+    canvasContainer.innerHTML = "";
 }
 function pushToChosenArray(chartCoins) {
     chosenCoinsArray = [];
@@ -393,8 +411,18 @@ let usdValues = {};
 let chosenCoinsArray = [];
 const canvasContainer = document.querySelector('#canvasContainer');
 let timeLabels = [];
-function updateChartDate() {
-    let chartData = {
+function updateChartOrCreate() {
+    if (canvasContainer.innerHTML === "") {
+        createChart();
+    }
+    myChart.update();
+}
+let myChart;
+function createChart() {
+    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
+    const canvas = document.getElementById('myChart');
+    const ctx = canvas;
+    myChart = new Chart(ctx, {
         data: {
             datasets: chosenCoinsArray,
             labels: timeLabels
@@ -403,30 +431,13 @@ function updateChartDate() {
             scales: {},
         },
         type: 'bar'
-    };
-    updateChartOrCreate(chartData);
-}
-function updateChartOrCreate(chartData) {
-    if (canvasContainer.innerHTML === "") {
-        createChart(chartData);
-    }
-    else {
-        myChart.update();
-    }
-}
-let myChart;
-function createChart(chartData) {
-    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
-    const canvas = document.getElementById('myChart');
-    const ctx = canvas;
-    myChart = new Chart(ctx, chartData);
+    });
 }
 function getTimeForChart() {
     return (moment().format("h:mm:ss"));
 }
 function getCoinValuePerSeconde(value, key) {
     usdValues[key].push(value);
-    console.log(usdValues);
 }
 let welcomeSection = document.querySelector('.welcome');
 window.addEventListener('scroll', () => {
