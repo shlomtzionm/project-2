@@ -73,7 +73,7 @@ let data: Coin[];
 
 async function init() {
   data = await getInformation("list");
-  handleCards(data);
+  handleCards(data,cardsCount);
 }
 init();
 
@@ -141,9 +141,9 @@ function saveLocalStorage(data: CoinID | Coin[], key: string) {
 
 let toggles: { [key: string]: boolean } = {};
 
-function handleCards(data: Coin[]) {
+function handleCards(data: Coin[],amount:number) {
   cardContainer.innerHTML = "";
-  let allCardsElements:CardElements[] = buildCardsElements(numberOfCardsOnPage(data));
+  let allCardsElements:CardElements[] = buildCardsElements(numberOfCardsOnPage(data,amount));
 handleCardFeatures(allCardsElements,data)  
 }
 
@@ -157,8 +157,10 @@ function handleCardFeatures(allCardsElements:CardElements[],data:Coin[]){
 }
 
 
-function numberOfCardsOnPage(data: Coin[]): Coin[] {
-  return data.length > 100 ? data.slice(0, 10) : data;
+function numberOfCardsOnPage(data: Coin[],amount:number): Coin[] {
+  let slicedData = data.slice(0, amount) 
+  console.log(cardsCount)
+  return slicedData
 }
 
 function buildCardsElements(numberOfCardsOnPage: Coin[]): CardElements[] {
@@ -354,10 +356,12 @@ async function handleSearch() {
   const inputValue = input.value.trim().toLocaleLowerCase();
   let dataFromLocalStorage = getDataFromLocalStorage("list");
   if (inputValue === "all") {
-    handleCards(dataFromLocalStorage);
+    handleCards(dataFromLocalStorage,20);
+    loudMore.style.display = "block"
   } else {
     let filteredData = handleFilteredData(dataFromLocalStorage, inputValue)
-    handleCards(filteredData);
+    handleCards(filteredData, filteredData.length);
+    loudMore.style.display = "none"
   }
 }
 
@@ -457,9 +461,9 @@ function saveChangesToggleObject() {
   });
   showModal(modal, "none");
   if (filteredData && filteredData.length > 0) {
-    handleCards(filteredData);
+    handleCards(filteredData, filteredData.length);
   } else {
-    handleCards(data);
+    handleCards(data, 20);
   }
 }
 
@@ -594,3 +598,11 @@ window.addEventListener("scroll", () => {
   const scrollPosition = window.scrollY;
   welcomeSection.style.transform = "translateY(" + scrollPosition * 0.5 + "px)";
 });
+
+let cardsCount = 20
+let loudMore = document.querySelector("#loudMore") as HTMLButtonElement
+loudMore.addEventListener("click",showMoreCards)
+function showMoreCards(){
+cardsCount = cardsCount+20
+handleCards(data,cardsCount)
+}

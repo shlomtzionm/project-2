@@ -49,7 +49,7 @@ let data;
 function init() {
     return __awaiter(this, void 0, void 0, function* () {
         data = yield getInformation("list");
-        handleCards(data);
+        handleCards(data, cardsCount);
     });
 }
 init();
@@ -104,9 +104,9 @@ function saveLocalStorage(data, key) {
     localStorage.setItem(`TTL ${key}`, JSON.stringify(new Date().getTime()));
 }
 let toggles = {};
-function handleCards(data) {
+function handleCards(data, amount) {
     cardContainer.innerHTML = "";
-    let allCardsElements = buildCardsElements(numberOfCardsOnPage(data));
+    let allCardsElements = buildCardsElements(numberOfCardsOnPage(data, amount));
     handleCardFeatures(allCardsElements, data);
 }
 function handleCardFeatures(allCardsElements, data) {
@@ -117,8 +117,10 @@ function handleCardFeatures(allCardsElements, data) {
         wasChecked(allCardsElements[i].toggle, data[i].symbol);
     }
 }
-function numberOfCardsOnPage(data) {
-    return data.length > 100 ? data.slice(0, 10) : data;
+function numberOfCardsOnPage(data, amount) {
+    let slicedData = data.slice(0, amount);
+    console.log(cardsCount);
+    return slicedData;
 }
 function buildCardsElements(numberOfCardsOnPage) {
     const cardElements = [];
@@ -273,11 +275,13 @@ function handleSearch() {
         const inputValue = input.value.trim().toLocaleLowerCase();
         let dataFromLocalStorage = getDataFromLocalStorage("list");
         if (inputValue === "all") {
-            handleCards(dataFromLocalStorage);
+            handleCards(dataFromLocalStorage, 20);
+            loudMore.style.display = "block";
         }
         else {
             let filteredData = handleFilteredData(dataFromLocalStorage, inputValue);
-            handleCards(filteredData);
+            handleCards(filteredData, filteredData.length);
+            loudMore.style.display = "none";
         }
     });
 }
@@ -357,10 +361,10 @@ function saveChangesToggleObject() {
     });
     showModal(modal, "none");
     if (filteredData && filteredData.length > 0) {
-        handleCards(filteredData);
+        handleCards(filteredData, filteredData.length);
     }
     else {
-        handleCards(data);
+        handleCards(data, 20);
     }
 }
 function handleLive() {
@@ -467,3 +471,10 @@ window.addEventListener("scroll", () => {
     const scrollPosition = window.scrollY;
     welcomeSection.style.transform = "translateY(" + scrollPosition * 0.5 + "px)";
 });
+let cardsCount = 20;
+let loudMore = document.querySelector("#loudMore");
+loudMore.addEventListener("click", showMoreCards);
+function showMoreCards() {
+    cardsCount = cardsCount + 20;
+    handleCards(data, cardsCount);
+}
