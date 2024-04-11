@@ -119,7 +119,6 @@ function handleCardFeatures(allCardsElements, data) {
 }
 function numberOfCardsOnPage(data, amount) {
     let slicedData = data.slice(0, amount);
-    console.log(cardsCount);
     return slicedData;
 }
 function buildCardsElements(numberOfCardsOnPage) {

@@ -260,6 +260,7 @@ input:checked + .slider:before {
 
 /* Media Queries */
 @media only screen and (max-width: 600px) {
+
  
     .welcome{
         display: none;
@@ -286,6 +287,7 @@ input:checked + .slider:before {
         width: 100%;
     }
     #flexContainer{
+        margin: auto;
         flex-direction:row;
         flex-wrap: wrap;
         width: 100%;

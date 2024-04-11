@@ -159,7 +159,6 @@ function handleCardFeatures(allCardsElements:CardElements[],data:Coin[]){
 
 function numberOfCardsOnPage(data: Coin[],amount:number): Coin[] {
   let slicedData = data.slice(0, amount) 
-  console.log(cardsCount)
   return slicedData
 }
 
