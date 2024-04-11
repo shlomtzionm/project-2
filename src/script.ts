@@ -524,7 +524,7 @@ function pushToCoinsDataset(chartCoins: CoinData) {
   for (const key in chartCoins) {
     if (chartCoins.Response){
      
-      alert("we dont have inprmation about this coin")
+      alert("we dont have information about this coin")
       pageToDisplay(liveReportsPage,aboutPage,homePage)
       clearInterval(intervalId)
       break
@@ -556,8 +556,7 @@ function updateChartOrCreate() {
 let myChart: Chart;
 
 function createChart() {
-  canvasContainer.innerHTML = `<canvas id="myChart" height="100" aria-label="Your Accessible Chart Name" role="img"></canvas>
-  `;
+  canvasContainer.innerHTML = `<canvas id="myChart" ></canvas>`;
   const canvas = document.getElementById("myChart") as HTMLCanvasElement;
   const ctx = canvas;
   myChart = new Chart(ctx, {
@@ -567,7 +566,12 @@ function createChart() {
     },
     options: {
       layout:{
-        padding:150
+        padding:{
+          left:80,
+          right:80,
+          bottom:20,
+          top:20,
+        } 
       },  
     },
     type: "bar",

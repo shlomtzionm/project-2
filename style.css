@@ -9,7 +9,7 @@ body {
     justify-content: space-between;
     width: 100%;
     flex-direction: row-reverse;
-    background-color: #557456; /* Example background color */
+    background-color: #8aaca1; /* Example background color */
     position: -webkit-sticky; /* For Safari */
     position: sticky;
     top: 0;
@@ -91,9 +91,9 @@ body {
 }
 
 .myCard {
-    background-color: #b2d0b2;
+    background-color: #55555518;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.279);
     padding: 20px;
     margin-bottom: 20px;
     width: 210px;
@@ -142,13 +142,14 @@ body {
 
 #myPic {
     display: block;
-    width: 300px;
-    height: 300px;
+    width: 250px;
+    height: 320px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #flexContainer {
+  
     margin: 0px auto;
     height: 500px;
     width: 700px;
@@ -159,11 +160,11 @@ body {
 }
 
 #aboutInfo {
-    background-color: #c8cac8;
+    margin-top: 150px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    height: 300px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.325);
+    width: 250px;
+    height: fit-content;
     padding-left: 20px;
     display: inline-block;
     white-space: normal;
@@ -254,6 +255,7 @@ input:checked + .slider:before {
 
 /* Media Queries */
 @media only screen and (max-width: 600px) {
+ 
     .welcome{
         display: none;
     }
@@ -279,7 +281,8 @@ input:checked + .slider:before {
         width: 100%;
     }
     #flexContainer{
-        flex-direction: column-reverse;
+        flex-direction:row;
+        flex-wrap: wrap;
         width: 100%;
         margin-top: 20px;
         justify-content: space-between;
