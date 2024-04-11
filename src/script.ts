@@ -57,11 +57,15 @@ class DatasetCoinForChart {
   type: "line";
   label: string;
   data: number[];
+  borderColor: "black";
+  Response?:"Error"
 
-  constructor(label: string, data: number[]) {
+  constructor(label: string, data: number[],Response?:"Error" ) {
     this.type = "line";
     this.label = label;
     this.data = data;
+    this.borderColor = "black",
+    this.Response ="Error"
   }
 }
 
@@ -518,13 +522,22 @@ function pushToCoinsDataset(chartCoins: CoinData) {
   coinsDataset = [];
 
   for (const key in chartCoins) {
+    if (chartCoins.Response){
+     
+      alert("we dont have inprmation about this coin")
+      pageToDisplay(liveReportsPage,aboutPage,homePage)
+      clearInterval(intervalId)
+      break
+      
+    }
     if (!usdValues[key]) {
       usdValues[key] = [];
     }
     getCoinValuePerSeconde(+chartCoins[key].USD, key);
-    coinsDataset.push(new DatasetCoinForChart(key, usdValues[key]));
-  }
-}
+    if(!chartCoins.Response){
+      coinsDataset.push(new DatasetCoinForChart(key, usdValues[key]))
+  } 
+}}
 
 
 const canvasContainer = document.querySelector(
@@ -543,7 +556,8 @@ function updateChartOrCreate() {
 let myChart: Chart;
 
 function createChart() {
-  canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
+  canvasContainer.innerHTML = `<canvas id="myChart" height="100" aria-label="Your Accessible Chart Name" role="img"></canvas>
+  `;
   const canvas = document.getElementById("myChart") as HTMLCanvasElement;
   const ctx = canvas;
   myChart = new Chart(ctx, {
@@ -552,11 +566,15 @@ function createChart() {
       labels: timeLabels,
     },
     options: {
-      scales: {},
+      layout:{
+        padding:150
+      },  
     },
     type: "bar",
   });
+  
 }
+
 
 function getTimeForChart(): string {
   return moment().format("h:mm:ss");

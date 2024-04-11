@@ -37,10 +37,12 @@ class CoinData {
     }
 }
 class DatasetCoinForChart {
-    constructor(label, data) {
+    constructor(label, data, Response) {
         this.type = "line";
         this.label = label;
         this.data = data;
+        this.borderColor = "black",
+            this.Response = "Error";
     }
 }
 let data;
@@ -408,11 +410,19 @@ function resetChartData() {
 function pushToCoinsDataset(chartCoins) {
     coinsDataset = [];
     for (const key in chartCoins) {
+        if (chartCoins.Response) {
+            alert("we dont have inprmation about this coin");
+            pageToDisplay(liveReportsPage, aboutPage, homePage);
+            clearInterval(intervalId);
+            break;
+        }
         if (!usdValues[key]) {
             usdValues[key] = [];
         }
         getCoinValuePerSeconde(+chartCoins[key].USD, key);
-        coinsDataset.push(new DatasetCoinForChart(key, usdValues[key]));
+        if (!chartCoins.Response) {
+            coinsDataset.push(new DatasetCoinForChart(key, usdValues[key]));
+        }
     }
 }
 const canvasContainer = document.querySelector("#canvasContainer");
@@ -425,7 +435,8 @@ function updateChartOrCreate() {
 }
 let myChart;
 function createChart() {
-    canvasContainer.innerHTML = `<canvas id="myChart"></canvas>`;
+    canvasContainer.innerHTML = `<canvas id="myChart" height="100" aria-label="Your Accessible Chart Name" role="img"></canvas>
+  `;
     const canvas = document.getElementById("myChart");
     const ctx = canvas;
     myChart = new Chart(ctx, {
@@ -434,7 +445,9 @@ function createChart() {
             labels: timeLabels,
         },
         options: {
-            scales: {},
+            layout: {
+                padding: 150
+            },
         },
         type: "bar",
     });
