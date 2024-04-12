@@ -356,11 +356,11 @@ async function handleSearch() {
   let dataFromLocalStorage = getDataFromLocalStorage("list");
   if (inputValue === "all") {
     handleCards(dataFromLocalStorage,20);
-    loudMore.style.display = "block"
+    loadMore.style.display = "block"
   } else {
     let filteredData = handleFilteredData(dataFromLocalStorage, inputValue)
     handleCards(filteredData, filteredData.length);
-    loudMore.style.display = "none"
+    loadMore.style.display = "none"
   }
 }
 
@@ -599,8 +599,8 @@ window.addEventListener("scroll", () => {
 });
 
 let cardsCount = 20
-let loudMore = document.querySelector("#loudMore") as HTMLButtonElement
-loudMore.addEventListener("click",showMoreCards)
+let loadMore = document.querySelector("#loadMore") as HTMLButtonElement
+loadMore.addEventListener("click",showMoreCards)
 function showMoreCards(){
 cardsCount = cardsCount+20
 handleCards(data,cardsCount)
